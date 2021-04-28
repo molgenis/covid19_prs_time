@@ -17,5 +17,5 @@ Scripts that are used to calculate polygenic scores
   Overarching script that submits `calculatePolygenicScoresForChromosome.sh` for every GWAS, chromosome
   
   
-`calculatePolygenicScoresForChromosome.sh`
+`calculatePolygenicScoresForChromosome.sh`:
   Script that calculates PGSs for a particular GWAS and chromosome
