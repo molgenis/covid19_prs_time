@@ -29,6 +29,7 @@ echo "Script to merge profiles: ${MERGER_RSCRIPT}"
 echo "Skip trait if the merged profile is already present? ${SKIP_TRAIT_IF_OUTPUT_PRESENT}"
 echo -e "--------------\n"
 
+# Specify the output directory
 OUTDIR="/groups/umcg-lifelines/tmp01/projects/ugli_blood_gsa/pgs_based_mixup_correction/output/PRScs/${RUN_IDENTIFIER}/"
 
 # Loop throug all GWASes to merge the plink profiles for every GWAS.

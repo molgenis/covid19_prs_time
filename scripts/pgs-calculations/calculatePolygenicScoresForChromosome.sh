@@ -4,6 +4,7 @@
 # This should be called using './calculatePolygenicScores.sh'
 
 # Load modules
+# We need to load PLINK2, Python (v2.7) and HDF5
 ml PLINK/2.0-alpha2-20191006
 ml PythonPlus/2.7.16-foss-2018b-v20.02.1
 ml HDF5/1.10.6-foss-2018b
@@ -19,7 +20,8 @@ SUMMARY=${3}
 N_GWAS=${4}
 OUTDIR=${5}
 FILE=${6}
-$LD_REFERENCE_PANEL="/groups/umcg-lld/tmp01/other-users/umcg-rwarmerdam/pgs_based_mixup_correction/data/PRScs/reference_panel/ldblk_1kg_eur/"
+# The LD reference panel that was supplied with PRScs
+LD_REFERENCE_PANEL="/groups/umcg-lld/tmp01/other-users/umcg-rwarmerdam/pgs_based_mixup_correction/data/PRScs/reference_panel/ldblk_1kg_eur/"
 
 echo -e "\nStarting:"
 echo "--------------"
@@ -30,7 +32,7 @@ echo "GWAS Sample size = ${N_GWAS}"
 echo "Output directory = ${OUTDIR}"
 echo -e "--------------\n"
 
-# BFILE
+# Plink bpgen binary file prefix to use
 BFILE="${BFILE_PATH}/${CHROM}.UGLI.imputed.qc.plink"
 
 python ~/pgs_based_mixup_correction/tools/PRScs/PRScs.py \
