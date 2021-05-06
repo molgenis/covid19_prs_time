@@ -16,7 +16,6 @@ prsGsaFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_be
 prsCytoFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_behaviour/PRS_correlation/input_PGS_data_cyto_v4_duplicate_filtered/PGS_combined_cyto_duplicate_from_ugli_removed_07-04-2021.txt"
 qOverviewFile <- "quest_overview_nl_new_quest17_codes_updated_14-days-include-complete-qof.txt"
 selectedPrsFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/pgs_correlations/selectedTraits.txt"
-blackListedSamplesFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/PROJECT_IDS_EARLIER_FILLED_IN.txt"
 validationSamplesFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_behaviour/PRS_correlation/validationSamples.txt"
 preparedDataFile <- "longitudinal.RData"
 
@@ -95,11 +94,6 @@ names(arrayList) <- levels(pheno2$array)
 
 
 pheno3 <- merge(pheno2, prs, by = "PROJECT_PSEUDO_ID")
-
-# Exclude some black lised samples
-blackList <- read.delim(blackListedSamplesFile, row.names = NULL, sep = "")
-sum(pheno3$PROJECT_PSEUDO_ID %in% blackList[,1])
-pheno3 <- pheno3[!pheno3$PROJECT_PSEUDO_ID %in% blackList[,1],]
 
 
 #center age
@@ -308,6 +302,13 @@ validationSamples <- read.delim("/groups/umcg-lifelines/tmp01/projects/ov20_0554
 validationRounds <- c("X4.0","X9.0", "X14.0", "X17.0")
 
 vragenLongValidation <- vragenLong[(vragenLong$vl %in% validationRounds) & (vragenLong$PROJECT_PSEUDO_ID %in% validationSamples),]
+
+vragenLongOther <- vragenLong[(vragenLong$vl %in% validationRounds) & !(vragenLong$PROJECT_PSEUDO_ID %in% validationSamples),]
+vragenLongOther2 <- vragenLong[ !(vragenLong$PROJECT_PSEUDO_ID %in% validationSamples),]
+
+vragenLongOther3 <- vragenLong[ (vragenLong$vl %in% validationRounds),]
+
+
 table(vragenLongValidation$vl)
 
 save(pheno3, vragenLong, qLoop, selectedQ, prs, qNameMap, validationSamples, validationRounds, vragenLongValidation, arrayList, file = preparedDataFile)

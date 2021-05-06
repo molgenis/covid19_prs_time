@@ -89,20 +89,25 @@ inverseVarianceMeta <- function(resultsPerArray, seCol, valueCol){
   return(metaRes)
 }
 
-qVsPrs <- read.delim("qVsPrsToTest.txt", stringsAsFactors = F, row.names = 1)
-if(!all(rownames(qVsPrs) %in% rownames(qNameMap))){
+qVsPrs <- read.delim("gwasses_to_perform_filtered.txt", stringsAsFactors = F)
+if(!all(qVsPrs$X %in% rownames(qNameMap))){
   stop("Not all Q found")
 }
-rownames(qVsPrs) <- qNameMap[rownames(qVsPrs),2]
+rownames(qVsPrs) <- qNameMap[qVsPrs$X,2]
 
+qLoop2 <- qLoop[names(qLoop) %in% qVsPrs$X]
+
+q<-qNameMap["BMI",2]
+q<-qNameMap["BMI",2]
 q<-qNameMap["hoeveel zorgen maakte u zich de afgelopen 14 dagen over de corona-crisis?",2]
-resultList <- lapply(qLoop, function(q){
+q<-qNameMap["hoe waardeert u uw kwaliteit van leven over de afgelopen 14 dagen? (include 7 days)",2]
+resultList <- lapply(qLoop2[2:3], function(q){
   #zScores = tryCatch({
   
   print(q)
   
   qInfo <- selectedQ[q,]
-  usedPrs <- strsplit(qVsPrs[q,1], ";")[[1]]
+  usedPrs <- strsplit(qVsPrs[q,2], ";")[[1]]
   # usedPrs <- usedPrs[!usedPrs %in% "Cigarettes.per.day"]
   #usedPrs <- c("BMI_gwas", "Life.satisfaction", "Neuroticism")
   #usedPrs <- "Life.satisfaction"
@@ -114,8 +119,8 @@ resultList <- lapply(qLoop, function(q){
   #usedPrs <- "COVID.19.severity"
   #usedPrs <- "Worry.vulnerability"
   
-  fixedString <- paste(q, "~((gender_recent+age_recent+age2_recent+household_recent+have_childs_at_home_recent+chronic_recent +", paste0(usedPrs, collapse = " + ") ,")*days + days2 ) ")
-  randomString <- "1|PROJECT_PSEUDO_ID"
+  fixedString <- paste(q, "~((gender_recent+age_recent+age2_recent+household_recent+have_childs_at_home_recent+chronic_recent +", paste0(usedPrs, collapse = " + ") ,")*days + I(days^2) ) ")
+  randomString <- "1+days+days2|PROJECT_PSEUDO_ID"#
   fixedModel <- as.formula(fixedString)
   randomModel <- as.formula(paste0("~",randomString))
   fullModel <- as.formula(paste0(fixedString, "+ (", randomString, ")"))
@@ -128,8 +133,8 @@ resultList <- lapply(qLoop, function(q){
     
     if(qInfo["Type"] == "gaussian" & qInfo["Mixed"]){
       print("test1")
-      res <-  lme(fixed = fixedModel, random=randomModel, data=d,na.action=na.omit, control = lmeControl(opt = "optim"))#control = lmeControl(opt = "optim")
-      coef <- summary(res)$tTable
+      res <-  lme(fixed = fixedModel, random=randomModel, data=d,na.action=na.omit)#control = lmeControl(opt = "optim")
+      return(res)
     } else if (qInfo["Type"] == "gaussian" & !qInfo["Mixed"]) {
       print("test2")
       stop("Not implement")
@@ -142,29 +147,56 @@ resultList <- lapply(qLoop, function(q){
         stop("not binomal")
       }
       glmMerFit <- glmer(fullModel, data = d, family = binomial, nAGQ=0 )
-      coef <- summary(glmMerFit)$coefficients
-      colnames(coef)[1:2]<-c("Value", "Std.Error")
+      return(glmMerFit)
     } else if (qInfo["Type"] == "binomial" & !qInfo["Mixed"]) {
       print("test4")
       d[,q] <- as.factor(d[,q])
       glmBinomFit <- glm(fixedModel ,family=binomial(link='logit'),data=d)
+      return(glmBinomFit)
+     }
+    
+    return(coef)
+  })
+  
+  
+  coefPerArray <- lapply(resultsPerArray, function(res){
+    coef <- 0
+    if(qInfo["Type"] == "gaussian" & qInfo["Mixed"]){
+      print("test1")
+      coef <- summary(res)$tTable
+    } else if (qInfo["Type"] == "gaussian" & !qInfo["Mixed"]) {
+      print("test2")
+      stop("Not implement")
+    } else if (qInfo["Type"] == "binomial" & qInfo["Mixed"]) {
+      print("test3")
+      coef <- summary(glmMerFit)$coefficients
+      colnames(coef)[1:2]<-c("Value", "Std.Error")
+    } else if (qInfo["Type"] == "binomial" & !qInfo["Mixed"]) {
+      print("test4b")
       coef <- summary(glmBinomFit)$coefficients
       colnames(coef)[1:2]<-c("Value", "Std.Error")
     }
-    
     return(coef)
   })
   
   #resultsPerArray[["Gsa"]]
   #resultsPerArray[["Cyto"]]
   
-  metaRes <- inverseVarianceMeta(resultsPerArray, "Std.Error", "Value")
+  metaRes <- as.matrix(inverseVarianceMeta(coefPerArray, "Std.Error", "Value"))
   
-  return(as.matrix(metaRes))
-  #}, error = function(e){print("error: ", q); return(NULL)})
+  coefPerArray[[1]]
+  coefPerArray[[2]]
+  
+  fullRes <- list("resPerArray" = resultsPerArray, "metaRes" = metaRes)
+  
+  return(fullRes)
+  #}, error = function(e){print("err  or: ", q); return(NULL)})
   # return(zScores)
 })
 
+
+dim(vragenLongTest)
+dim(vragenLongValidation)
 
 plot(ranef(res))
 dev.off()
@@ -174,10 +206,10 @@ dev.off()
 
 
 
+zScoreList[[1]]
 
-
-zScoreList <- lapply(resultList, function(x){return(x[,"z"])})
-pvalueList <- lapply(resultList, function(x){return(x[,"p"])})
+zScoreList <- lapply(resultList, function(x){return(x[["metaRes"]][,"z", drop = F])})
+pvalueList <- lapply(resultList, function(x){return(x[["metaRes"]][,"p", drop = F])})
 
 # combine into z-score matrix excluding intercept
 zscores <- do.call("cbind", zScoreList)
