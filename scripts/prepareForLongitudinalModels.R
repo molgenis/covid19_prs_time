@@ -213,7 +213,7 @@ table(vragenLong[,"hebt.u.de.afgelopen.14.dagen.gerookt."], useNA = "always")
 
 ## Read selected questions
 
-selectedQ <- read.delim("selectedQs_20210408.txt", stringsAsFactors = F)
+selectedQ <- read.delim("selectedQs.txt", stringsAsFactors = F)
 selectedQ <- selectedQ[selectedQ[,"Question"] %in% qNameMap[,1],]
 selectedQ$qId <- qNameMap[selectedQ[,"Question"],2]
 rownames(selectedQ) <- selectedQ[,"qId"]
