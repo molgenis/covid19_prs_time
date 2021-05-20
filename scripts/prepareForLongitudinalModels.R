@@ -17,6 +17,7 @@ prsCytoFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_b
 qOverviewFile <- "quest_overview_nl_new_quest17_codes_updated_14-days-include-complete-qof.txt"
 selectedPrsFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/pgs_correlations/selectedTraits.txt"
 validationSamplesFile <- "validationSamples.txt"
+longitudinalSelectionRecodingFile <- "longitudinalQuestionSelection_20210520.txt"
 selectedQFile <- "selectedQs.txt"
 preparedDataFile <- "longitudinal.RData"
 
@@ -244,60 +245,34 @@ colnames(prs)
 str(cor.test(prs[prs[,1] %in% pheno3[,"PROJECT_PSEUDO_ID"],"Life.satisfaction"], prs[prs[,1] %in% pheno3[,"PROJECT_PSEUDO_ID"],"Neuroticism"]))
 str(cor.test(prs[prs[,1] %in% pheno3[,"PROJECT_PSEUDO_ID"],"Life.satisfaction"], prs[prs[,1] %in% pheno3[,"PROJECT_PSEUDO_ID"],"Depression..broad."]))
 
+longitudinalSelectionRecoding <- read.table(
+  longitudinalSelectionRecodingFile, sep = "\t",
+  stringsAsFactors = F, row.names = 1, header = T, quote = "")
+
+
 ## Convert ordinal to binary
 for (qIndex in (1:nrow(selectedQ))) {
   q <- rownames(selectedQ)[qIndex]
+  qName <- selectedQ[qIndex, "Question"]
   qInfo <- selectedQ[q,]
   if (!is.na(qInfo["Type"]) && qInfo["Type"] == "ordinal") {
     print(q)
     recodedQId <- paste0(q, "_binary")
     ordinalAnswers <- vragenLong[,q]
     recoded <- rep(NA_integer_, length(ordinalAnswers))
-    if (q == "ik.heb.vertrouwen.in.de.aanpak.van.de.corona.crisis.door.de.nederlandse.regering") {
-      recoded[ordinalAnswers %in% c(1:2)] <- 0
-      recoded[ordinalAnswers %in% c(3:5)] <- 1
-    } else if (q == "ik.maak.me.zorgen.om.zelf.ziek.te.worden...hoeveel.zorgen.maakte.u.zich.de.afgelopen.14.dagen.over.de.corona.crisis.") {
-      recoded[ordinalAnswers %in% c(1:2)] <- 0
-      recoded[ordinalAnswers %in% c(3:5)] <- 1
-    } else if (q == "ik.voel.me.verbonden.met.alle.nederlanders..in.de.afgelopen.7.dagen.") {
-      recoded[ordinalAnswers %in% c(1:3)] <- 0
-      recoded[ordinalAnswers %in% c(4:5)] <- 1
-    } else if (q == "ik.voel.me.niet.verplicht.om.de.corona.maatregelen.van.de.overheid.aan.te.houden..in.de.afgelopen.7.dagen.") {
-      recoded[ordinalAnswers %in% c(1:3)] <- 0
-      recoded[ordinalAnswers %in% c(4:5)] <- 1
-    } else if (q == "ik.heb.het.gevoel.dat.ik.niet.gewaardeerd.word.door.anderen.in.de.maatschappij..in.de.afgelopen.7.dagen.") {
-      recoded[ordinalAnswers %in% c(1:3)] <- 0
-      recoded[ordinalAnswers %in% c(4:5)] <- 1
-    } else if (q == "in.de.afgelopen.14.dagen..hoeveel.minuten.hebt.u.in.het.totaal..matig..intensief.bewogen..bijvoorbeeld.wandelen..fietsen..hardlopen..") {
-      recoded[ordinalAnswers %in% c(2:5)] <- 0
-      recoded[ordinalAnswers %in% c(1)] <- 1
-    } else if (q == "hoe.vaak.voelt.u.zich.alleen...in.de.afgelopen.14.dagen.") {
-      recoded[ordinalAnswers %in% c(1:2)] <- 0
-      recoded[ordinalAnswers %in% c(3)] <- 1
-    } else if (q == qNameMap["bang / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?",2]) {
-      recoded[ordinalAnswers %in% c(1:2)] <- 0
-      recoded[ordinalAnswers %in% c(3:5)] <- 1
-    } else if (q == qNameMap["bedroefd / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?",2]) {
-      recoded[ordinalAnswers %in% c(1:2)] <- 0
-      recoded[ordinalAnswers %in% c(3:5)] <- 1
-    } else if (q == qNameMap["hoe vaak voelt u zich afgesloten van anderen? (in de afgelopen 7 dagen)",2]) {
-      recoded[ordinalAnswers %in% c(1:2)] <- 0
-      recoded[ordinalAnswers %in% c(3)] <- 1
-    } else if (q == qNameMap["hoe vaak voelt u zich alleen? (in de afgelopen 7 dagen)",2]) {
-      recoded[ordinalAnswers %in% c(1:2)] <- 0
-      recoded[ordinalAnswers %in% c(3)] <- 1
-    } else if (q == qNameMap["ik maak me zorgen dat ik mijn baan verlies / hoeveel zorgen maakte u zich de afgelopen 7 dagen over de corona-crisis?",2]) {
-      recoded[ordinalAnswers %in% c(1:3)] <- 0
-      recoded[ordinalAnswers %in% c(4:5)] <- 1
-    } else if (q == qNameMap["ik voel me buitengesloten door de maatschappij (in de afgelopen 7 dagen)",2]) {
-      recoded[ordinalAnswers %in% c(1:3)] <- 0
-      recoded[ordinalAnswers %in% c(4:5)] <- 1
-    } else if (q == qNameMap["je lichamelijk ergens slap voelen / in welke mate had u de afgelopen 7 dagen last van:",2]) {
-      recoded[ordinalAnswers %in% c(1:2)] <- 0
-      recoded[ordinalAnswers %in% c(3:5)] <- 1
-    } else if (q == qNameMap["je soms erg warm, dan weer erg koud voelen / in welke mate had u de afgelopen 7 dagen last van:",2]) {
-      recoded[ordinalAnswers %in% c(1:2)] <- 0
-      recoded[ordinalAnswers %in% c(3:5)] <- 1
+    
+    valueLabelsAsJson <- NA_character_
+    if (qName %in% row.names(longitudinalSelectionRecoding)) {
+      valueLabelsAsJson <- longitudinalSelectionRecoding[qName, "Recode.value.labels"]
+    }
+    
+    if (!is.na(valueLabelsAsJson) 
+        && !is.null(valueLabelsAsJson) 
+        && valueLabelsAsJson != "") {
+      
+      valueLabels <- unlist(fromJSON(valueLabelsAsJson))
+      
+      recoded <- valueLabels[ordinalAnswers]
     } else {
       recoded <- ordinalAnswers
     }
@@ -313,6 +288,7 @@ for (qIndex in (1:nrow(selectedQ))) {
     rownames(selectedQ)[qIndex] <- recodedQId
   }
 }
+
 qLoop <- as.list(selectedQ[,"qId"])
 names(qLoop) <- selectedQ[,"Question"]
 
