@@ -19,7 +19,6 @@ qOverviewFile <- "quest_overview_nl_new_quest17_codes_updated_14-days-include-co
 selectedPrsFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/pgs_correlations/selectedTraits.txt"
 validationSamplesFile <- "validationSamples.txt"
 longitudinalSelectionRecodingFile <- "longitudinalQuestionSelection_20210520.txt"
-selectedQFile <- "selectedQs.txt"
 preparedDataFile <- "longitudinal.RData"
 
 setwd(workdir)
@@ -217,7 +216,11 @@ table(vragenLong[,"hebt.u.de.afgelopen.14.dagen.gerookt."], useNA = "always")
 ## Read selected questions
 
 
-selectedQ <- read.delim(selectedQFile, stringsAsFactors = F)
+selectedQ <- read.table(
+  longitudinalSelectionRecodingFile, sep = "\t",
+  stringsAsFactors = F, header = T, quote = "")
+
+
 selectedQ <- selectedQ[selectedQ[,"Question"] %in% qNameMap[,1],]
 selectedQ$qId <- qNameMap[selectedQ[,"Question"],2]
 rownames(selectedQ) <- selectedQ[,"qId"]
@@ -245,10 +248,10 @@ dev.off()
 colnames(prs)
 str(cor.test(prs[prs[,1] %in% pheno3[,"PROJECT_PSEUDO_ID"],"Life.satisfaction"], prs[prs[,1] %in% pheno3[,"PROJECT_PSEUDO_ID"],"Neuroticism"]))
 str(cor.test(prs[prs[,1] %in% pheno3[,"PROJECT_PSEUDO_ID"],"Life.satisfaction"], prs[prs[,1] %in% pheno3[,"PROJECT_PSEUDO_ID"],"Depression..broad."]))
-
-longitudinalSelectionRecoding <- read.table(
-  longitudinalSelectionRecodingFile, sep = "\t",
-  stringsAsFactors = F, row.names = 1, header = T, quote = "")
+# 
+# longitudinalSelectionRecoding <- read.table(
+#   longitudinalSelectionRecodingFile, sep = "\t",
+#   stringsAsFactors = F, row.names = 1, header = T, quote = "")
 
 
 ## Convert ordinal to binary
@@ -262,10 +265,9 @@ for (qIndex in (1:nrow(selectedQ))) {
     ordinalAnswers <- vragenLong[,q]
     recoded <- rep(NA_integer_, length(ordinalAnswers))
     
-    valueLabelsAsJson <- NA_character_
-    if (qName %in% row.names(longitudinalSelectionRecoding)) {
-      valueLabelsAsJson <- longitudinalSelectionRecoding[qName, "Recode.value.labels"]
-    }
+    valueLabelsAsJson <- selectedQ[qIndex, "Recode.value.labels"]
+    
+    print(valueLabelsAsJson)
     
     if (!is.na(valueLabelsAsJson) 
         && !is.null(valueLabelsAsJson) 
