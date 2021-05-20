@@ -4,6 +4,7 @@
 
 library(heatmap3)
 library(readr)
+library(rjson)
 
 
 
@@ -276,6 +277,7 @@ for (qIndex in (1:nrow(selectedQ))) {
     } else {
       recoded <- ordinalAnswers
     }
+    
     print(table(recoded))
     print(table(ordinalAnswers))
     if (sum(table(recoded)) != sum(table(ordinalAnswers))) {
