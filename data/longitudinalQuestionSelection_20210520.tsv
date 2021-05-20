@@ -71,8 +71,8 @@ bang / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	ordinal-orde
 actief / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	ordinal-ordered	binomial	TRUE	7		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}	
 ik doe alles wat ik kan om anderen te helpen die besmet zijn met het coronavirus (in de afgelopen 7 dagen)	ordinal-ordered	binomial	TRUE	7		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}	
 ik verwacht dat anderen alles zullen doen om mij te helpen als ik met het coronavirus besmet ben of raak (in de afgelopen 7 dagen)	ordinal-ordered	binomial	TRUE	7		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}	
-in de afgelopen 7 dagen, hoeveel tijd bracht u gemiddeld per werkdag (ma t/m vr) zittend door?	ordinal-ordered	binomial	TRUE	6			
-in de afgelopen 7 dagen, hoeveel tijd bracht u gemiddeld per weekenddag (za, zo) zittend door?	ordinal-ordered	binomial	TRUE	6			
+in de afgelopen 7 dagen, hoeveel tijd bracht u gemiddeld per werkdag (ma t/m vr) zittend door?	ordinal-ordered	binomial	TRUE	6		NA	
+in de afgelopen 7 dagen, hoeveel tijd bracht u gemiddeld per weekenddag (za, zo) zittend door?	ordinal-ordered	binomial	TRUE	6		NA	
 welk rapportcijfer geeft u zichzelf voor hoe fit u zich voelt (van 1 tot 10)	gaussian	gaussian	TRUE	4		NA	
 ik voel me niet verplicht om de corona maatregelen van de overheid aan te houden (in de afgelopen 7 dagen)	ordinal-ordered	binomial	TRUE	4		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}	
 ik voel me buitengesloten door de maatschappij (in de afgelopen 7 dagen)	ordinal-ordered	binomial	TRUE	4		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}	
