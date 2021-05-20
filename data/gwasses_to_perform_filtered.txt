@@ -1,0 +1,97 @@
+	GWAS
+BMI	Accelerometer.based.physical.activity.measurement..average.acceleration.;Anxiety.tension;BMI_gwas;Cigarettes.per.day;EduYears;Worry.vulnerability
+Mini combined, depressief score	Life.satisfaction;Neuroticism
+Positive tested cumsum	COVID.19.susceptibility
+aandachtig / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	EduYears
+actief / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	Accelerometer.based.physical.activity.measurement..average.acceleration.;EduYears;Life.satisfaction
+bang / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	Depression..broad.;Life.satisfaction;Neuroticism;Schizophrenia;Worry.vulnerability
+bedroefd / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	Depression..broad.;Life.satisfaction;Neuroticism
+beschaamd / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	Neuroticism;Worry.vulnerability
+buikpijn / in welke mate had u de afgelopen 7 dagen last van:	Depression..broad.;Life.satisfaction;Neuroticism;Schizophrenia
+diarree / in welke mate had u de afgelopen 7 dagen last van:	Life.satisfaction
+diarree of buikpijn / in welke mate had u de afgelopen 7 dagen last van:	Life.satisfaction
+duizeligheid / in welke mate had u de afgelopen 7 dagen last van:	Depression..broad.;Life.satisfaction;Neuroticism
+een brok in je keel / in welke mate had u de afgelopen 7 dagen last van:	Life.satisfaction
+geen handen schuddden / ik houd me aan de volgende maatregelen:	EduYears
+gevoelige huid / in welke mate had u de afgelopen 14 dagen last van:	Life.satisfaction;Schizophrenia
+geïnspireerd / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	EduYears
+hebt u bijna elke nacht slaapproblemen gehad (moeilijk inslapen, wakker worden tijdens de nacht of te vroeg in de ochtend, of juist teveel slapen)? (in de afgelopen 7 dagen)	Depression..broad.;EduYears;Life.satisfaction;Neuroticism
+hebt u de afgelopen 7 dagen gerookt?	Anxiety.tension;BMI_gwas;Cigarettes.per.day;EduYears
+hebt u de afgelopen 7 dagen medicatie gebruikt?	BMI_gwas;Depression..broad.;EduYears;Life.satisfaction;Neuroticism
+hebt u een chronische aandoening?	BMI_gwas;Cigarettes.per.day;Depression..broad.;EduYears;Life.satisfaction;Neuroticism
+hebt u in de afgelopen 7 dagen buitensporig gepiekerd en zich zorgen gemaakt over meerdere problemen van het dagelijks leven, op het werk, thuis, in uw naaste omgeving?	EduYears;Life.satisfaction;Neuroticism
+hebt u tijdens de afgelopen 7 dagen voortdurend het gevoel gehad nergens meer zin in te hebben of geen interesse meer te hebben voor dingen die u normaal wel interesseren?	EduYears;Life.satisfaction;Neuroticism
+hebt u zich tijdens de afgelopen 7 dagen voortdurend somber of depressief gevoeld gedurende het grootste gedeelte van de dag, en dit bijna elke dag?	EduYears;Life.satisfaction
+heeft iemand die dichtbij u staat een coronavirus-infectie?	EduYears
+het coronavirus bedreigt iedereen in nederland	EduYears
+hoe vaak per dag wast u uw handen?	EduYears
+hoe vaak voelt u zich afgesloten van anderen? (in de afgelopen 7 dagen)	Life.satisfaction
+hoe vaak voelt u zich alleen? (in de afgelopen 7 dagen)	Life.satisfaction;Neuroticism
+hoe vaak voelt u zich buitengesloten? (in de afgelopen 7 dagen)	Life.satisfaction;Neuroticism
+hoe vaak wast u uw handen 20 seconden of langer?	BMI_gwas;EduYears
+hoe waardeert u uw kwaliteit van leven over de afgelopen 14 dagen?	Depression..broad.;Life.satisfaction;Neuroticism
+hoesten zonder slijm / in welke mate had u de afgelopen 7 dagen last van:	Neuroticism
+hoeveel zorgen maakte u zich de afgelopen 7 dagen over de corona-crisis?	Life.satisfaction;Neuroticism;Schizophrenia;Worry.vulnerability
+hoofdpijn / in welke mate had u de afgelopen 7 dagen last van:	Depression..broad.;Life.satisfaction;Neuroticism
+ik bedenk me dat het vergeleken met andere dingen allemaal best meevalt / wat denkt u over het algemeen wanneer u iets vervelends of iets ergs heeft meegemaakt?	EduYears;Neuroticism
+ik bedenk me dat ik het moet accepteren / wat denkt u over het algemeen wanneer u iets vervelends of iets ergs heeft meegemaakt?	EduYears
+ik ben bang dat het fout zal gaan in de samenleving (in de afgelopen 7 dagen)	Depression..broad.;EduYears;Life.satisfaction;Neuroticism
+ik ben gefrustreerd dat mensen de corona regels niet naleven	Neuroticism
+ik ben gefrustreerd over hoe het nu gaat in de samenleving (in de afgelopen 7 dagen)	EduYears;Life.satisfaction;Neuroticism
+ik denk er telkens aan hoe vreselijk de situatie is geweest / wat denkt u over het algemeen wanneer u iets vervelends of iets ergs heeft meegemaakt?	EduYears;Neuroticism
+ik doe alles wat ik kan om anderen te helpen die besmet zijn met het coronavirus (in de afgelopen 7 dagen)	EduYears
+ik heb de neiging om snel terug te veren na moeilijke tijden	EduYears;Neuroticism
+ik heb het gevoel dat ik niet gewaardeerd word door anderen in de maatschappij (in de afgelopen 7 dagen)	BMI_gwas;Life.satisfaction;Neuroticism
+ik heb vertrouwen in de aanpak van de corona-crisis door de nederlandse regering	EduYears;Life.satisfaction;Neuroticism
+ik hou graag zelf de controle over een situatie	General.risky.behavior
+ik maak me zorgen dat het lang gaat duren voordat ik mijn normale dagelijkse leven weer kan oppakken / hoeveel zorgen maakte u zich de afgelopen 7 dagen over de corona-crisis?	Life.satisfaction;Neuroticism
+ik maak me zorgen dat iemand die dichtbij mij staat ziek wordt / hoeveel zorgen maakte u zich de afgelopen 7 dagen over de corona-crisis?	Life.satisfaction;Neuroticism
+ik maak me zorgen dat ik mijn baan verlies / hoeveel zorgen maakte u zich de afgelopen 7 dagen over de corona-crisis?	EduYears;Neuroticism
+ik maak me zorgen dat ik of mijn familie financieel ernstig in de problemen kom(t) / hoeveel zorgen maakte u zich de afgelopen 7 dagen over de corona-crisis?	EduYears;Life.satisfaction;Neuroticism
+ik maak me zorgen om zelf ziek te worden / hoeveel zorgen maakte u zich de afgelopen 7 dagen over de corona-crisis?	EduYears;Life.satisfaction;Neuroticism
+ik vermijd horeca gelegenheden (bars, restaurants) / ik neem deze extra maatregelen voor mezelf:	Drinks.per.week
+ik vermijd parken en/of stranden / ik neem deze extra maatregelen voor mezelf:	EduYears
+ik verwacht dat anderen alles zullen doen om mij te helpen als ik met het coronavirus besmet ben of raak (in de afgelopen 7 dagen)	Autism.spectrum.disorder
+ik voel me buitengesloten door de maatschappij (in de afgelopen 7 dagen)	EduYears;Life.satisfaction
+ik voel me niet verplicht om de corona maatregelen van de overheid aan te houden (in de afgelopen 7 dagen)	EduYears
+ik voel me verbonden met alle nederlanders (in de afgelopen 7 dagen)	Autism.spectrum.disorder
+ik voelde me fit / in welke mate had u de afgelopen 7 dagen last van:	Depression..broad.;EduYears;Life.satisfaction;Neuroticism;Schizophrenia
+ik voelde me moe / in welke mate had u de afgelopen 7 dagen last van:	Depression..broad.;Life.satisfaction;Neuroticism;Schizophrenia
+ik was gauw moe / in welke mate had u de afgelopen 7 dagen last van:	Depression..broad.;Life.satisfaction;Neuroticism;Schizophrenia
+in de afgelopen 7 dagen, hoeveel minuten hebt u in het totaal (matig) intensief bewogen (bijvoorbeeld wandelen, fietsen, hardlopen)?	Accelerometer.based.physical.activity.measurement..average.acceleration.;BMI_gwas;EduYears
+in de afgelopen 7 dagen, hoeveel tijd bracht u gemiddeld per weekenddag (za, zo) zittend door?	Moderate.to.vigorous.physical.activity.levels
+in de afgelopen 7 dagen, hoeveel tijd bracht u gemiddeld per werkdag (ma t/m vr) zittend door?	EduYears;Moderate.to.vigorous.physical.activity.levels
+je lichamelijk ergens slap voelen / in welke mate had u de afgelopen 7 dagen last van:	Depression..broad.;Life.satisfaction;Neuroticism;Schizophrenia
+je soms erg warm, dan weer erg koud voelen / in welke mate had u de afgelopen 7 dagen last van:	Life.satisfaction;Neuroticism
+keelpijn / in welke mate had u de afgelopen 7 dagen last van:	Depression..broad.;Life.satisfaction;Neuroticism;Schizophrenia
+kon u zich bijna elke dag moeilijk concentreren of moeilijk beslissingen nemen? (in de afgelopen 7 dagen)	Depression..broad.;Life.satisfaction;Neuroticism
+kortademigheid / in welke mate had u de afgelopen 7 dagen last van:	BMI_gwas;Cigarettes.per.day;Depression..broad.;EduYears;Life.satisfaction;Neuroticism;Schizophrenia
+lichamelijk voelde ik me uitgeput / in welke mate had u de afgelopen 7 dagen last van:	Depression..broad.;Life.satisfaction;Neuroticism;Schizophrenia
+mensen in een risicogroep niet bezoeken (van 70 jaar of ouder en/of met kwetsbare gezondheid) / ik houd me aan de volgende maatregelen:	EduYears
+misselijkheid of een maag die van streek is / in welke mate had u de afgelopen 7 dagen last van:	Life.satisfaction;Neuroticism
+moeilijk adem kunnen krijgen / in welke mate had u de afgelopen 7 dagen last van:	BMI_gwas;EduYears;Life.satisfaction;Neuroticism
+nerveus / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	Depression..broad.;Life.satisfaction;Neuroticism;Worry.vulnerability
+niezen / in welke mate had u de afgelopen 7 dagen last van:	Depression..broad.;Life.satisfaction;Neuroticism
+op hoeveel momenten van de dag eet u iets?	EduYears
+pijn bij het ademen / in welke mate had u de afgelopen 7 dagen last van:	Life.satisfaction
+pijn boven in de rug / in welke mate had u de afgelopen 14 dagen last van:	Depression..broad.;Life.satisfaction;Neuroticism
+pijn in de borst of hartstreek / in welke mate had u de afgelopen 7 dagen last van:	Depression..broad.;Life.satisfaction;Neuroticism;Schizophrenia
+pijn in de nek, schouder(s) of arm(en) / in welke mate had u de afgelopen 14 dagen last van:	Depression..broad.;Life.satisfaction;Neuroticism
+pijn onder in de rug / in welke mate had u de afgelopen 7 dagen last van:	Life.satisfaction;Neuroticism
+pijnlijke spieren / in welke mate had u de afgelopen 7 dagen last van:	Depression..broad.;EduYears;Life.satisfaction;Neuroticism;Schizophrenia
+praatte of bewoog u trager dan gewoonlijk, of voelde u zich juist rusteloos, gejaagd en kon u moeilijk stil blijven zitten? bijna elke dag? (in de afgelopen 7 dagen)	Life.satisfaction;Neuroticism
+rode, pijnlijke of jeukende ogen / in welke mate had u de afgelopen 7 dagen last van:	Life.satisfaction
+sinds de uitbraak van de corona-crisis zie ik anderen in mijn omgeving, zoals mensen in de buurt of in winkels, als een bedreiging voor mijn welzijn	EduYears;Neuroticism;Schizophrenia
+u bijzonder prikkelbaar was? / gebeurde het in de afgelopen 7 dagen vaak dat	Life.satisfaction;Neuroticism
+u zich gespannen voelde? / gebeurde het in de afgelopen 7 dagen vaak dat	Depression..broad.;Life.satisfaction;Neuroticism;Schizophrenia
+u zich rusteloos, geladen of zenuwachtig voelde? / gebeurde het in de afgelopen 7 dagen vaak dat	Depression..broad.;Life.satisfaction;Neuroticism
+vastbesloten / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	Life.satisfaction
+vijandig / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	Depression..broad.;Life.satisfaction;Neuroticism
+voelde u zich bijna elke dag moe of futloos? (in de afgelopen 14 dagen)	Life.satisfaction;Neuroticism
+voelde u zich bijna elke dag waardeloos of schuldig? (in de afgelopen 7 dagen)	Life.satisfaction
+voorafgaand aan de corona-crisis, hoeveel minuten bewoog u per week (matig) intensief (bijvoorbeeld wandelen, fietsen, hardlopen)?	Accelerometer.based.physical.activity.measurement..average.acceleration.;BMI_gwas;EduYears
+was uw eetlust merkbaar veranderd, of is uw gewicht toegenomen of afgenomen, zonder dat dit de bedoeling was? (in de afgelopen 7 dagen)	BMI_gwas;EduYears;Neuroticism
+wat vindt u, over het algemeen genomen, van uw gezondheid?	Accelerometer.based.physical.activity.measurement..average.acceleration.;BMI_gwas;Depression..broad.;EduYears;Life.satisfaction;Neuroticism
+welk rapportcijfer geeft u zichzelf voor hoe fit u zich voelt (van 1 tot 10)	Life.satisfaction
+werkt tenminste één van uw huisgenoten nog buitenshuis?	EduYears
+zwaar voelen in armen of benen / in welke mate had u de afgelopen 7 dagen last van:	Depression..broad.;Life.satisfaction;Neuroticism
