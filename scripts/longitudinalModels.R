@@ -4,7 +4,9 @@ library(nlme)
 library(heatmap3)
 library(readr)
 library(lme4)
+#library(future.apply)
 library(survival)
+library(parallel)
 
 workdir <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/pgs_correlations/"
 preparedDataFile <- "longitudinal.RData"
@@ -89,20 +91,24 @@ inverseVarianceMeta <- function(resultsPerArray, seCol, valueCol){
   return(metaRes)
 }
 
-qVsPrs <- read.delim("qVsPrsToTest.txt", stringsAsFactors = F, row.names = 1)
-if(!all(rownames(qVsPrs) %in% rownames(qNameMap))){
-  stop("Not all Q found")
-}
-rownames(qVsPrs) <- qNameMap[rownames(qVsPrs),2]
-
-q<-qNameMap["hoeveel zorgen maakte u zich de afgelopen 14 dagen over de corona-crisis?",2]
-resultList <- lapply(qLoop, function(q){
-  #zScores = tryCatch({
+#qPrs <- qVsPrsRecode2[qVsPrsRecode2[,"prsTrait"] == "Life.satisfaction",][1,]
+fitModel <- function(qPrs, selectedQ, vragenLong, arrayList){
   
-  print(q)
+  library(nlme)
+  library(lme4)
+  
+  #zScores = tryCatch({
+  print(paste(qPrs["question"], qPrs["prsTrait"], sep = " - "))
+  
+  q <- qPrs["question2"]
+  
+  if(!q %in% rownames(selectedQ)){
+    print("skip")
+    return(list("resPerArray" = NA, "metaRes" = NA, "qPrs" = qPrs, "error" = "Not in selected Q"))
+  }
   
   qInfo <- selectedQ[q,]
-  usedPrs <- strsplit(qVsPrs[q,1], ";")[[1]]
+  usedPrs <- qPrs["prsTrait"]
   # usedPrs <- usedPrs[!usedPrs %in% "Cigarettes.per.day"]
   #usedPrs <- c("BMI_gwas", "Life.satisfaction", "Neuroticism")
   #usedPrs <- "Life.satisfaction"
@@ -114,57 +120,147 @@ resultList <- lapply(qLoop, function(q){
   #usedPrs <- "COVID.19.severity"
   #usedPrs <- "Worry.vulnerability"
   
-  fixedString <- paste(q, "~((gender_recent+age_recent+age2_recent+household_recent+have_childs_at_home_recent+chronic_recent +", paste0(usedPrs, collapse = " + ") ,")*days + days2 ) ")
-  randomString <- "1|PROJECT_PSEUDO_ID"
+  fixedString <- paste(q, "~((gender_recent+age_recent+age2_recent+household_recent+have_childs_at_home_recent+chronic_recent +", paste0(usedPrs, collapse = " + ") ,")*days + I(days^2) ) ")
+  randomString <- "1+days+days2|PROJECT_PSEUDO_ID"#
   fixedModel <- as.formula(fixedString)
   randomModel <- as.formula(paste0("~",randomString))
   fullModel <- as.formula(paste0(fixedString, "+ (", randomString, ")"))
   
-  resultsPerArray <- lapply(arrayList, function(array){
-    
-    d <- vragenLong[!is.na(vragenLong[,q]) & vragenLong$array == array,c("PROJECT_PSEUDO_ID", q,usedPrs,"gender_recent","age_recent","age2_recent","household_recent","have_childs_at_home_recent","chronic_recent", "days", "days2", "days3", "vl")]
-    table(d[,q])
+  resultsPerArray <- tryCatch(
+    {
+      lapply(arrayList, function(array){
+        
+        d <- vragenLong[!is.na(vragenLong[,q]) & vragenLong$array == array,c("PROJECT_PSEUDO_ID", q,usedPrs,"gender_recent","age_recent","age2_recent","household_recent","have_childs_at_home_recent","chronic_recent", "days", "days2", "days3", "vl")]
+        table(d[,q])
+        coef <- 0
+        
+        if(qInfo["Type"] == "gaussian" & qInfo["Mixed"]){
+          res <-  lme(fixed = fixedModel, random=randomModel, data=d,na.action=na.omit, control = lmeControl(opt = "optim"))#
+          return(res)
+        } else if (qInfo["Type"] == "gaussian" & !qInfo["Mixed"]) {
+          stop("Not implement")
+        } else if (qInfo["Type"] == "binomial" & qInfo["Mixed"]) {
+          if(max(d[,q])==2){
+            d[,q] <- d[,q] -1
+          }
+          if(sum(range(d[,q])==0:1)!=2){
+            stop("not binomal")
+          }
+          glmMerFit <- glmer(fullModel, data = d, family = binomial, nAGQ=0 )
+          return(glmMerFit)
+        } else if (qInfo["Type"] == "binomial" & !qInfo["Mixed"]) {
+          d[,q] <- as.factor(d[,q])
+          glmBinomFit <- glm(fixedModel ,family=binomial(link='logit'),data=d)
+          return(glmBinomFit)
+        }
+        
+        return(coef)
+      })
+    },
+    error=function(cond){
+      message(paste("ERROR:", qPrs["question"], qPrs["prsTrait"],cond))
+      return(list("resPerArray" = NA, "metaRes" = NA, "qPrs" = qPrs, "error" = cond$message))
+    }
+  )#end try catch
+  
+  
+  if(is.na(resultsPerArray[[1]])){
+    #contains list with info
+    return(resultsPerArray)
+  }
+  
+  
+  coefPerArray <- lapply(resultsPerArray, function(res){
     coef <- 0
-    
     if(qInfo["Type"] == "gaussian" & qInfo["Mixed"]){
       print("test1")
-      res <-  lme(fixed = fixedModel, random=randomModel, data=d,na.action=na.omit, control = lmeControl(opt = "optim"))#control = lmeControl(opt = "optim")
       coef <- summary(res)$tTable
     } else if (qInfo["Type"] == "gaussian" & !qInfo["Mixed"]) {
       print("test2")
       stop("Not implement")
     } else if (qInfo["Type"] == "binomial" & qInfo["Mixed"]) {
       print("test3")
-      if(max(d[,q])==2){
-        d[,q] <- d[,q] -1
-      }
-      if(sum(range(d[,q])==0:1)!=2){
-        stop("not binomal")
-      }
-      glmMerFit <- glmer(fullModel, data = d, family = binomial, nAGQ=0 )
-      coef <- summary(glmMerFit)$coefficients
+      coef <- summary(res)$coefficients
       colnames(coef)[1:2]<-c("Value", "Std.Error")
     } else if (qInfo["Type"] == "binomial" & !qInfo["Mixed"]) {
-      print("test4")
-      d[,q] <- as.factor(d[,q])
-      glmBinomFit <- glm(fixedModel ,family=binomial(link='logit'),data=d)
-      coef <- summary(glmBinomFit)$coefficients
+      print("test4b")
+      coef <- summary(res)$coefficients
       colnames(coef)[1:2]<-c("Value", "Std.Error")
     }
-    
     return(coef)
   })
   
-  #resultsPerArray[["Gsa"]]
-  #resultsPerArray[["Cyto"]]
+  metaRes <- as.matrix(inverseVarianceMeta(coefPerArray, "Std.Error", "Value"))
   
-  metaRes <- inverseVarianceMeta(resultsPerArray, "Std.Error", "Value")
+  coefPerArray[[1]]
+  coefPerArray[[2]]
   
-  return(as.matrix(metaRes))
-  #}, error = function(e){print("error: ", q); return(NULL)})
-  # return(zScores)
+  fullRes <- list("resPerArray" = resultsPerArray, "metaRes" = metaRes, "qPrs" = qPrs, "error" = NA)
+  
+  return(fullRes)
+  
+}
+
+
+
+qVsPrs <- read.delim("gwasses_to_perform_filtered.txt", stringsAsFactors = F)
+if(!all(qVsPrs$X %in% rownames(qNameMap))){
+  stop("Not all Q found")
+}
+qVsPrs$saveName <- qNameMap[qVsPrs$X,2]
+rownames(qVsPrs) <- qVsPrs$saveName
+
+qVsPrsRecode <- apply(qVsPrs, 1,function(x){
+  prsTraits <- strsplit(x[2], ";")[[1]]
+  combi <- cbind(x[1],x[3],prsTraits)
+  return(combi)
 })
 
+qVsPrsRecode[[2]][1,3]
+
+qVsPrsRecode2 <- do.call(rbind, qVsPrsRecode)
+colnames(qVsPrsRecode2) <- c("question", "question2", "prsTrait")
+
+head(qVsPrsRecode2)
+
+qLoop2 <- qLoop[names(qLoop) %in% qVsPrs$X]
+
+q<-qNameMap["BMI",2]
+q<-qNameMap["BMI",2]
+q<-qNameMap["hoeveel zorgen maakte u zich de afgelopen 14 dagen over de corona-crisis?",2]
+q<-qNameMap["hoe waardeert u uw kwaliteit van leven over de afgelopen 14 dagen? (include 7 days)",2]
+
+
+
+clust <- makeCluster(8)
+clusterExport(clust, "inverseVarianceMeta")
+resultList <- parApply(clust, qVsPrsRecode2[qVsPrsRecode2[,"prsTrait"] == "Life.satisfaction",], 1, fitModel, selectedQ = selectedQ, vragenLong = vragenLong, arrayList = arrayList)
+stopCluster(clust)
+
+
+
+a <- lapply(resultList, function(x){
+  if(!is.na(x[["metaRes"]]))
+  {
+    print(paste(x[["qPrs"]]["question"], x[["qPrs"]]["prsTrait"], sep = " - "))
+    r <- nrow(x[["metaRes"]])
+    print(x[["metaRes"]][r,"z"])
+  }
+})
+
+
+str(resultList)
+
+qVsPrsRecode2[c(12,13,16),"question2"] %in% rownames(selectedQ)
+
+
+names(resultList) <- paste(qVsPrsRecode2[,1], qVsPrsRecode2[,3], sep = "-")
+
+resultList[[3]]
+str(resultList, max.level = 1)
+
+dim(vragenLongTest)
+dim(vragenLongValidation)
 
 plot(ranef(res))
 dev.off()
@@ -172,12 +268,14 @@ dev.off()
 plot(res)
 dev.off()
 
+names(resultList)
 
+resultList
 
+zScoreList[[1]]
 
-
-zScoreList <- lapply(resultList, function(x){return(x[,"z"])})
-pvalueList <- lapply(resultList, function(x){return(x[,"p"])})
+zScoreList <- lapply(resultList, function(x){return(tail(x[["metaRes"]][,"z", drop = F],n=1))})
+pvalueList <- lapply(resultList, function(x){return(x[["metaRes"]][,"p", drop = F])})
 
 # combine into z-score matrix excluding intercept
 zscores <- do.call("cbind", zScoreList)
