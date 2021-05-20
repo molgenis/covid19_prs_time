@@ -9,14 +9,15 @@ library(readr)
 
 ## Paths
 workdir <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/pgs_correlations/"
-phenoPath <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_behaviour/PRS_correlation/combined_questionnaires_v8_14-04-2021_genome_fitered/questionaire_df_subset_participants_with_genome_data_14-04-2021"
+phenoPath <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_behaviour/PRS_correlation/combined_questionnaires_v22_14-05-2021_genome_fitered_participants_filtered_correct_recoded/questionnaire_subset_participants_filtered_recoded_answers_longitudinal_filtered_15-05-2021"
 prsLabelFile <- "prsLables.txt"
-sampleQcFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_behaviour/PRS_correlation/inclusionPerVl.txt"
+inclusionPrVlFile <- "inclusionPerVl.txt"
 prsGsaFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_behaviour/PRS_correlation/input_PGS_data_ugli_v4/PGS_combined_ugli_07-04-2021.txt"
 prsCytoFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_behaviour/PRS_correlation/input_PGS_data_cyto_v4_duplicate_filtered/PGS_combined_cyto_duplicate_from_ugli_removed_07-04-2021.txt"
 qOverviewFile <- "quest_overview_nl_new_quest17_codes_updated_14-days-include-complete-qof.txt"
 selectedPrsFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/pgs_correlations/selectedTraits.txt"
-validationSamplesFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_behaviour/PRS_correlation/validationSamples.txt"
+validationSamplesFile <- "validationSamples.txt"
+selectedQFile <- "selectedQs.txt"
 preparedDataFile <- "longitudinal.RData"
 
 setwd(workdir)
@@ -44,7 +45,7 @@ confounders <- c("gender_recent", "age_recent", "age2_recent", "chronic_recent",
 ##load pheno and prs
 pheno2 <- readRDS(paste0(phenoPath, ".rds"))
 
-sampleQc <- read.delim(sampleQcFile, stringsAsFactors = F, row.names = 1)
+sampleQc <- read.delim(inclusionPrVlFile, stringsAsFactors = F, row.names = 1)
 
 pheno2 <- pheno2[pheno2$PROJECT_PSEUDO_ID %in% row.names(sampleQc),]
 dim(pheno2)
@@ -213,7 +214,8 @@ table(vragenLong[,"hebt.u.de.afgelopen.14.dagen.gerookt."], useNA = "always")
 
 ## Read selected questions
 
-selectedQ <- read.delim("selectedQs.txt", stringsAsFactors = F)
+
+selectedQ <- read.delim(selectedQFile, stringsAsFactors = F)
 selectedQ <- selectedQ[selectedQ[,"Question"] %in% qNameMap[,1],]
 selectedQ$qId <- qNameMap[selectedQ[,"Question"],2]
 rownames(selectedQ) <- selectedQ[,"qId"]
@@ -272,6 +274,30 @@ for (qIndex in (1:nrow(selectedQ))) {
     } else if (q == "hoe.vaak.voelt.u.zich.alleen...in.de.afgelopen.14.dagen.") {
       recoded[ordinalAnswers %in% c(1:2)] <- 0
       recoded[ordinalAnswers %in% c(3)] <- 1
+    } else if (q == qNameMap["bang / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?",2]) {
+      recoded[ordinalAnswers %in% c(1:2)] <- 0
+      recoded[ordinalAnswers %in% c(3:5)] <- 1
+    } else if (q == qNameMap["bedroefd / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?",2]) {
+      recoded[ordinalAnswers %in% c(1:2)] <- 0
+      recoded[ordinalAnswers %in% c(3:5)] <- 1
+    } else if (q == qNameMap["hoe vaak voelt u zich afgesloten van anderen? (in de afgelopen 7 dagen)",2]) {
+      recoded[ordinalAnswers %in% c(1:2)] <- 0
+      recoded[ordinalAnswers %in% c(3)] <- 1
+    } else if (q == qNameMap["hoe vaak voelt u zich alleen? (in de afgelopen 7 dagen)",2]) {
+      recoded[ordinalAnswers %in% c(1:2)] <- 0
+      recoded[ordinalAnswers %in% c(3)] <- 1
+    } else if (q == qNameMap["ik maak me zorgen dat ik mijn baan verlies / hoeveel zorgen maakte u zich de afgelopen 7 dagen over de corona-crisis?",2]) {
+      recoded[ordinalAnswers %in% c(1:3)] <- 0
+      recoded[ordinalAnswers %in% c(4:5)] <- 1
+    } else if (q == qNameMap["ik voel me buitengesloten door de maatschappij (in de afgelopen 7 dagen)",2]) {
+      recoded[ordinalAnswers %in% c(1:3)] <- 0
+      recoded[ordinalAnswers %in% c(4:5)] <- 1
+    } else if (q == qNameMap["je lichamelijk ergens slap voelen / in welke mate had u de afgelopen 7 dagen last van:",2]) {
+      recoded[ordinalAnswers %in% c(1:2)] <- 0
+      recoded[ordinalAnswers %in% c(3:5)] <- 1
+    } else if (q == qNameMap["je soms erg warm, dan weer erg koud voelen / in welke mate had u de afgelopen 7 dagen last van:",2]) {
+      recoded[ordinalAnswers %in% c(1:2)] <- 0
+      recoded[ordinalAnswers %in% c(3:5)] <- 1
     } else {
       recoded <- ordinalAnswers
     }
@@ -298,7 +324,7 @@ qLoop <- qLoop[!names(qLoop)=="ik vind het ongeacht de corona crisis fijn dat me
 table(vragenLong[,"Positive.tested.cumsum" ], useNA = "always")
 
 
-validationSamples <- read.delim("/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_behaviour/PRS_correlation/validationSamples.txt", header = F)[,1]
+validationSamples <- read.delim(validationSamplesFile, header = F)[,1]
 validationRounds <- c("X4.0","X9.0", "X14.0", "X17.0")
 
 vragenLongValidation <- vragenLong[(vragenLong$vl %in% validationRounds) & (vragenLong$PROJECT_PSEUDO_ID %in% validationSamples),]
@@ -312,3 +338,4 @@ vragenLongOther3 <- vragenLong[ (vragenLong$vl %in% validationRounds),]
 table(vragenLongValidation$vl)
 
 save(pheno3, vragenLong, qLoop, selectedQ, prs, qNameMap, validationSamples, validationRounds, vragenLongValidation, arrayList, file = preparedDataFile)
+
