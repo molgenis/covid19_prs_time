@@ -18,7 +18,7 @@ prsCytoFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_b
 qOverviewFile <- "quest_overview_nl_new_quest17_codes_updated_14-days-include-complete-qof.txt"
 selectedPrsFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/pgs_correlations/selectedTraits.txt"
 validationSamplesFile <- "validationSamples.txt"
-longitudinalSelectionRecodingFile <- "longitudinalQuestionSelection_20210520.txt"
+longitudinalSelectionRecodingFile <- "longitudinalQuestionSelection_20210521.txt"
 preparedDataFile <- "longitudinal.RData"
 
 setwd(workdir)
@@ -230,6 +230,7 @@ rownames(selectedQ) <- selectedQ[,"qId"]
 
 str(!is.na(vragenLong[,selectedQ[,"qId"][1]]))
 qRange <- t(sapply(selectedQ[,"qId"], function(x){
+  # Remove 
   range(vragenLong[!is.na(vragenLong[,x]),"days"],na.rm = T)
 }))
 str(qRange)
@@ -265,7 +266,7 @@ for (qIndex in (1:nrow(selectedQ))) {
     ordinalAnswers <- vragenLong[,q]
     recoded <- rep(NA_integer_, length(ordinalAnswers))
     
-    valueLabelsAsJson <- selectedQ[qIndex, "Recode.value.labels"]
+    valueLabelsAsJson <- selectedQ[qIndex, "recode_value_labels"]
     
     print(valueLabelsAsJson)
     
