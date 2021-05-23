@@ -4,11 +4,12 @@ library(nlme)
 library(heatmap3)
 library(readr)
 library(lme4)
-#library(future.apply)
+library(future.apply)
 library(survival)
 library(parallel)
 
 workdir <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/pgs_correlations/"
+intermediatesdir <-  "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/pgs_correlations/longiIntermediates/"
 preparedDataFile <- "longitudinal.RData"
 
 setwd(workdir)
@@ -91,16 +92,27 @@ inverseVarianceMeta <- function(resultsPerArray, seCol, valueCol){
   return(metaRes)
 }
 
-#qPrs <- qVsPrsRecode2[qVsPrsRecode2[,"prsTrait"] == "Life.satisfaction",][1,]
-fitModel <- function(qPrs, selectedQ, vragenLong, arrayList){
+#qPrs <- qVsPrsRecode2[qVsPrsRecode2[,"prsTrait"] == "OCD",][1,]
+fitModel <- function(qPrs, selectedQ, arrayList){
   
-  library(nlme)
-  library(lme4)
+ # library(nlme)
+#  library(lme4)
   
   #zScores = tryCatch({
   print(paste(qPrs["question"], qPrs["prsTrait"], sep = " - "))
   
   q <- qPrs["question2"]
+  
+  intermediateFile <- make.names(paste0(qPrs["question"], "_", qPrs["prsTrait"]))
+  intermediatePath <- paste0(intermediatesdir, "/" , intermediateFile, ".rds")
+  
+  fullRes <- NA
+  
+  if(file.exists(intermediatePath)){
+    #Load exising results
+    fullRes <- readRDS(intermediatePath)
+  } else {
+    #calculate new results
   
   if(!q %in% rownames(selectedQ)){
     print("skip")
@@ -132,7 +144,7 @@ fitModel <- function(qPrs, selectedQ, vragenLong, arrayList){
         
         d <- vragenLong[!is.na(vragenLong[,q]) & vragenLong$array == array,c("PROJECT_PSEUDO_ID", q,usedPrs,"gender_recent","age_recent","age2_recent","household_recent","have_childs_at_home_recent","chronic_recent", "days", "days2", "days3", "vl")]
         table(d[,q])
-        coef <- 0
+        coef <- NA
         
         if(qInfo["Type"] == "gaussian" & qInfo["Mixed"]){
           res <-  lme(fixed = fixedModel, random=randomModel, data=d,na.action=na.omit, control = lmeControl(opt = "optim"))#
@@ -159,12 +171,13 @@ fitModel <- function(qPrs, selectedQ, vragenLong, arrayList){
     },
     error=function(cond){
       message(paste("ERROR:", qPrs["question"], qPrs["prsTrait"],cond))
+      saveRDS(fullRes, intermediatePath)
       return(list("resPerArray" = NA, "metaRes" = NA, "qPrs" = qPrs, "error" = cond$message))
     }
   )#end try catch
   
   
-  if(is.na(resultsPerArray[[1]])){
+  if(is.na(resultsPerArray[1])){
     #contains list with info
     return(resultsPerArray)
   }
@@ -195,7 +208,9 @@ fitModel <- function(qPrs, selectedQ, vragenLong, arrayList){
   coefPerArray[[1]]
   coefPerArray[[2]]
   
-  fullRes <- list("resPerArray" = resultsPerArray, "metaRes" = metaRes, "qPrs" = qPrs, "error" = NA)
+  fullRes <- list("resPerArray" = resultsPerArray, "metaRes" = metaRes, "qPrs" = qPrs, "error" = NA, "fixedModel" = fixedModel, "randomModel" = randomModel, "fullModel" = fullModel)
+  saveRDS(fullRes, intermediatePath)
+  }
   
   return(fullRes)
   
@@ -230,19 +245,31 @@ q<-qNameMap["BMI",2]
 q<-qNameMap["hoeveel zorgen maakte u zich de afgelopen 14 dagen over de corona-crisis?",2]
 q<-qNameMap["hoe waardeert u uw kwaliteit van leven over de afgelopen 14 dagen? (include 7 days)",2]
 
-
-
-clust <- makeCluster(8)
-clusterExport(clust, "inverseVarianceMeta")
-resultList <- parApply(clust, qVsPrsRecode2[qVsPrsRecode2[,"prsTrait"] == "Life.satisfaction",], 1, fitModel, selectedQ = selectedQ, vragenLong = vragenLong, arrayList = arrayList)
+clust <- makeForkCluster(nnodes = 8)
+clusterExport("vragenLong")
+clusterExport("intermediatesdir")
+clusterEvalQ(clust, {
+  library(lme4)
+  library(nlme)
+})
+resultList <- parApply(clust, qVsPrsRecode2, 1, fitModel, selectedQ = selectedQ, arrayList = arrayList)
 stopCluster(clust)
 
 
 
+resultList <- apply(qVsPrsRecode2, 1, fitModel, selectedQ = selectedQ, arrayList = arrayList)
+
+
+#resultList <- parApply(clust, qVsPrsRecode2[qVsPrsRecode2[,"prsTrait"] == "Life.satisfaction",], 1, fitModel, selectedQ = selectedQ, arrayList = arrayList)
+
+i <- 0 
 a <- lapply(resultList, function(x){
-  if(!is.na(x[["metaRes"]]))
+  
+  i <<- i + 1
+  
+  if(!is.na(x["metaRes"]))
   {
-    print(paste(x[["qPrs"]]["question"], x[["qPrs"]]["prsTrait"], sep = " - "))
+    print(paste(i, x[["qPrs"]]["question"], x[["qPrs"]]["prsTrait"], sep = " - "))
     r <- nrow(x[["metaRes"]])
     print(x[["metaRes"]][r,"z"])
   }
