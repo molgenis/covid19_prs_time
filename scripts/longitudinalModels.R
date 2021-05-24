@@ -260,7 +260,7 @@ stopCluster(clust)
 resultList <- apply(qVsPrsRecode2, 1, fitModel, selectedQ = selectedQ, arrayList = arrayList)
 
 
-#resultList <- parApply(clust, qVsPrsRecode2[qVsPrsRecode2[,"prsTrait"] == "Life.satisfaction",], 1, fitModel, selectedQ = selectedQ, arrayList = arrayList)
+resultList <- parApply(clust, qVsPrsRecode2[qVsPrsRecode2[,"prsTrait"] == "Schizophrenia",], 1, fitModel, selectedQ = selectedQ, arrayList = arrayList)
 
 i <- 0 
 a <- lapply(resultList, function(x){
