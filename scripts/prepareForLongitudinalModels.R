@@ -18,7 +18,7 @@ prsCytoFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_b
 qOverviewFile <- "quest_overview_nl_new_quest17_codes_updated_14-days-include-complete-qof.txt"
 selectedPrsFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/pgs_correlations/selectedTraits.txt"
 validationSamplesFile <- "validationSamples.txt"
-longitudinalSelectionRecodingFile <- "longitudinalQuestionSelection_20210520.txt"
+longitudinalSelectionRecodingFile <- "longitudinalQuestionSelection_20210525.txt"
 preparedDataFile <- "longitudinal.RData"
 
 setwd(workdir)
@@ -225,7 +225,6 @@ selectedQ <- selectedQ[selectedQ[,"Question"] %in% qNameMap[,1],]
 selectedQ$qId <- qNameMap[selectedQ[,"Question"],2]
 rownames(selectedQ) <- selectedQ[,"qId"]
 
-
 ## Add first / last day for selectedQ
 
 str(!is.na(vragenLong[,selectedQ[,"qId"][1]]))
@@ -259,13 +258,13 @@ for (qIndex in (1:nrow(selectedQ))) {
   q <- rownames(selectedQ)[qIndex]
   qName <- selectedQ[qIndex, "Question"]
   qInfo <- selectedQ[q,]
-  if (!is.na(qInfo["Type"]) && qInfo["Type"] == "ordinal") {
+  valueLabelsAsJson <- selectedQ[qIndex, "recode_value_labels"]
+  
+  if (!is.na(valueLabelsAsJson)) {
     print(q)
     recodedQId <- paste0(q, "_binary")
     ordinalAnswers <- vragenLong[,q]
     recoded <- rep(NA_integer_, length(ordinalAnswers))
-    
-    valueLabelsAsJson <- selectedQ[qIndex, "Recode.value.labels"]
     
     print(valueLabelsAsJson)
     
