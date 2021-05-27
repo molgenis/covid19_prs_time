@@ -18,7 +18,7 @@ prsCytoFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_b
 qOverviewFile <- "quest_overview_nl_new_quest17_codes_updated_14-days_v2.txt"
 selectedPrsFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/pgs_correlations/selectedTraits.txt"
 validationSamplesFile <- "validationSamples.txt"
-longitudinalSelectionRecodingFile <- "question_selection_20210525.tsv"
+longitudinalSelectionRecodingFile <- "longitudinalQuestionSelection_20210527.txt"
 preparedDataFile <- "longitudinal.RData"
 
 setwd(workdir)
@@ -208,13 +208,7 @@ vragenLong$chronic_recent <- factor(vragenLong$chronic_recent, levels = 0:1, lab
 hist(vragenLong$days, breaks = 330)
 dev.off()
 
-## Recode smoking
-table(vragenLong[,"hebt.u.de.afgelopen.14.dagen.gerookt."], useNA = "always")
-vragenLong[!is.na(vragenLong[,"hebt.u.de.afgelopen.14.dagen.gerookt."]) & vragenLong[,"hebt.u.de.afgelopen.14.dagen.gerookt."] == 2,"hebt.u.de.afgelopen.14.dagen.gerookt."] <- 0
-table(vragenLong[,"hebt.u.de.afgelopen.14.dagen.gerookt."], useNA = "always")
-
 ## Read selected questions
-
 
 selectedQ <- read.table(
   longitudinalSelectionRecodingFile, sep = "\t",
@@ -259,37 +253,30 @@ for (qIndex in (1:nrow(selectedQ))) {
   q <- rownames(selectedQ)[qIndex]
   qName <- selectedQ[qIndex, "Question"]
   qInfo <- selectedQ[q,]
-  if (!is.na(qInfo["Type"]) && qInfo["Type"] == "ordinal") {
-    print(q)
-    recodedQId <- paste0(q, "_binary")
+
+  Used_in_longitudinal_analysis <- selectedQ[q, "Used_in_longitudinal_analysis"]
+  valueLabelsAsJson <- selectedQ[qIndex, "recode_value_labels"]
+  
+  if (Used_in_longitudinal_analysis 
+      && !is.na(valueLabelsAsJson) 
+      && !is.null(valueLabelsAsJson) 
+      && valueLabelsAsJson != "") {
+    print(qName)
     ordinalAnswers <- vragenLong[,q]
     recoded <- rep(NA_integer_, length(ordinalAnswers))
     
-    valueLabelsAsJson <- selectedQ[qIndex, "Recode.value.labels"]
-    
-    print(valueLabelsAsJson)
-    
-    if (!is.na(valueLabelsAsJson) 
-        && !is.null(valueLabelsAsJson) 
-        && valueLabelsAsJson != "") {
       
-      valueLabels <- unlist(fromJSON(valueLabelsAsJson))
-      
-      recoded <- valueLabels[ordinalAnswers]
-    } else {
-      recoded <- ordinalAnswers
-    }
+    valueLabels <- unlist(fromJSON(valueLabelsAsJson))
+    print(valueLabels)
     
+    recoded <- valueLabels[as.character(ordinalAnswers)]
+  
     print(table(recoded))
     print(table(ordinalAnswers))
     if (sum(table(recoded)) != sum(table(ordinalAnswers))) {
       stop("Sum of answer frequencies not equal")
     }
-    vragenLong[,recodedQId] <- recoded
-    selectedQ[q, "Type"] <- "binomial"
-    selectedQ[q, "qId"] <- recodedQId
-    qNameMap[selectedQ[qIndex,"Question"],2] <- recodedQId
-    rownames(selectedQ)[qIndex] <- recodedQId
+    vragenLong[,q] <- recoded
   }
 }
 
