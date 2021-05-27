@@ -17,61 +17,6 @@ load(preparedDataFile)
 
 
 #Functions:
-spread_factor_columns <- function(df) {
-  variables <- colnames(df)
-  # For all columns, check if it is a factor,
-  # if so, spread levels across columns as 0/1.
-  # else, copy the column as is.
-  out <- do.call("cbind", lapply(variables, function(variable) {
-    col <- df[,variable]
-    if (is.factor(col)) {
-      # For all levels, add a numeric column (0/1) indicating the
-      # factor value for the row.
-      uniqueLevels <- levels(col)
-      colDf <- as.data.frame(lapply(uniqueLevels, function(factorLevel) {
-        levelBool <- as.numeric(col == factorLevel)
-      }))
-      colnames(colDf) <- paste0(variable, uniqueLevels)
-      return(colDf)
-    } else {
-      colDf <- data.frame(col)
-      colnames(colDf) <- variable
-      return(colDf)
-    }
-  }))
-  return(out)
-}
-# Function to predict outcome values given a new dataset, 
-# named coefficient list (from a meta-analysis),
-# the model on which analysis is based
-predict_meta <- function(df, coefficients, family) {
-  # Spread all factor levels across columns for all columns that are factors.
-  dfSpread <- spread_factor_columns(df)
-  # Calculate the predicted values per term
-  predictionPerTerm <- do.call("cbind", sapply(
-    names(coefficients), 
-    function(coefficientLabel) {
-      # Coefficient
-      coefficient <- coefficients[coefficientLabel]
-      # Parse coefficient label,
-      # Find out which columns should be multiplied
-      variablesToMultiply <- strsplit(coefficientLabel, ":", fixed = T)[[1]]
-      if (all(variablesToMultiply == "(Intercept)")) {
-        return(data.frame(coefficientLabel = rep(coefficient, nrow(dfSpread))))
-      } else if (length(variablesToMultiply) == 2) {
-        return(Reduce(`*`, dfSpread[variablesToMultiply]) * coefficient)
-      } else if (length(variablesToMultiply == 1)) {
-        return(dfSpread[variablesToMultiply] * coefficient)
-      } else {
-        stop("Something went wrong, or we are going to multiply more than two terms. Check if this works first!")
-      }
-    }))
-  # Calculate the predicted values on a regular linear scale
-  predicted <- rowSums(predictionPerTerm)
-  # Return values according to the linear inverse of the link function
-  return(family$linkinv(predicted))
-}
-
 
 inverseVarianceMeta <- function(resultsPerArray, seCol, valueCol){
   x <- as.data.frame(resultsPerArray[[1]][,FALSE])
@@ -92,7 +37,7 @@ inverseVarianceMeta <- function(resultsPerArray, seCol, valueCol){
   return(metaRes)
 }
 
-#qPrs <- qVsPrsRecode2[qVsPrsRecode2[,"prsTrait"] == "OCD",][1,]
+qPrs <- qVsPrsRecode2[qVsPrsRecode2[,"prsTrait"] == "OCD" & qVsPrsRecode2[,"prsTrait"] == "OCD",][1,]
 fitModel <- function(qPrs, selectedQ, arrayList){
   
  # library(nlme)
@@ -171,8 +116,9 @@ fitModel <- function(qPrs, selectedQ, arrayList){
     },
     error=function(cond){
       message(paste("ERROR:", qPrs["question"], qPrs["prsTrait"],cond))
+      fullRes <- list("resPerArray" = NA, "metaRes" = NA, "qPrs" = qPrs, "error" = cond$message)
       saveRDS(fullRes, intermediatePath)
-      return(list("resPerArray" = NA, "metaRes" = NA, "qPrs" = qPrs, "error" = cond$message))
+      return(fullRes)
     }
   )#end try catch
   
@@ -218,7 +164,7 @@ fitModel <- function(qPrs, selectedQ, arrayList){
 
 
 
-qVsPrs <- read.delim("gwasses_to_perform_filtered.txt", stringsAsFactors = F)
+qVsPrs <- read.delim("gwasses_to_perform_filtered_include_14_days.txt", stringsAsFactors = F)
 if(!all(qVsPrs$X %in% rownames(qNameMap))){
   stop("Not all Q found")
 }
@@ -255,7 +201,7 @@ clusterEvalQ(clust, {
 resultList <- parApply(clust, qVsPrsRecode2, 1, fitModel, selectedQ = selectedQ, arrayList = arrayList)
 stopCluster(clust)
 
-
+str(resultList[[1]], max.level = 1)
 
 resultList <- apply(qVsPrsRecode2, 1, fitModel, selectedQ = selectedQ, arrayList = arrayList)
 
@@ -269,12 +215,24 @@ a <- lapply(resultList, function(x){
   
   if(!is.na(x["metaRes"]))
   {
-    print(paste(i, x[["qPrs"]]["question"], x[["qPrs"]]["prsTrait"], sep = " - "))
     r <- nrow(x[["metaRes"]])
-    print(x[["metaRes"]][r,"z"])
-  }
+    z <- x[["metaRes"]][r,"z"]
+    
+    if(!is.null(z)){
+      if(abs(z)>= 2.5){
+      print(paste(i, x[["qPrs"]]["question"], x[["qPrs"]]["prsTrait"], sep = " - "))
+        print(paste("Zscore", z))
+      }
+      
+      }
+    }
 })
 
+
+
+str(summary)
+
+summary(resultList[[9]])
 
 str(resultList)
 

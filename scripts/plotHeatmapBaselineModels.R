@@ -10,15 +10,19 @@ library(NMF)
 workdir <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/pgs_correlations/"
 inclusionPrVlFile <- "inclusionPerVl.txt"
 preparedDataFile <- "longitudinal.RData"
-qVsPrsBaselineZscoresFile <- "covid_combined_matrix_z_scores_in_heatmap_11-05-2021.txt"
+qVsPrsBaselineZscoresFile <- "covid_combined_matrix_z_scores_first_values_25-05-2021.txt"
+heatmapLabelsFiles <- "question_selection_heatmap_20210525.txt"
 
 setwd(workdir)
 load(preparedDataFile)
 
 
+prsLabels <- as.matrix(read.delim(prsLabelFile, stringsAsFactors = F, row.names = 1))[,1]
+
 inclusionPrVl <- read.delim(inclusionPrVlFile)
 str(inclusionPrVl)
 
+heatmapLabels <- read.delim(heatmapLabelsFiles, stringsAsFactors = F)
 
 
 prs2 <- prs[prs$PROJECT_PSEUDO_ID %in% inclusionPrVl[,1],]
@@ -41,71 +45,33 @@ qVsPrsBaselineZscores[is.na(qVsPrsBaselineZscores)] <- 0
 prs3 <- prs2[,colnames(qVsPrsBaselineZscores) ]
 
 #300 is questions tested; 23 is PRS tested
-bonThres <- abs(qnorm((0.05 / (300 * 23))/2))
-
+bonThres <- abs(qnorm((0.05 / (300 * 17))/2))
 #qWithHit <- apply(qVsPrsBaselineZscores, 1, function(x){any(abs(x) >= bonThres)})
 
+anySig <- apply(qVsPrsBaselineZscores, 1, function(x){
+  return(any(abs(x)>= bonThres))
+})
+sum(anySig)
+
+qVsPrsBaselineZscores <- qVsPrsBaselineZscores[anySig,]
+
+row.names(qVsPrsBaselineZscores) <- heatmapLabels$label_en[match(row.names(qVsPrsBaselineZscores), heatmapLabels$Question)]
+
+all(colnames(qVsPrsBaselineZscores) %in% names(prsLabels))
+
+colnames(qVsPrsBaselineZscores) <- prsLabels[match(colnames(qVsPrsBaselineZscores), names(prsLabels))]
+
+colnames(prs3) <- prsLabels[match(colnames(prs3), names(prsLabels))]
+
+
 save(bonThres, prs3, qVsPrsBaselineZscores, file = "heatmapData.Rdata")
-
-colorRampPalette(c("navy", "white", "firebrick3"))(1024)
-
-x <- as.matrix(qVsPrsBaselineZscores[qWithHit,])
-cut.off <- round(quantile(1:length(col), probs = (abs(max(x,  na.rm = T)) + abs(min(x, na.rm = T)))/(2 * abs(min(x,    na.rm = T)))))
-pdf("baselineQvsPrs.pdf", height = 15, width = 15)
-heatmap3(qVsPrsBaselineZscores[qWithHit,], scale = "none", balanceColor = T, Colv = hmData$Colv, margins = c(15,15))
-dev.off()
-
-plot(hclust(dist(t(prs2[,-1]))))
-dev.off()
-
-pdf("test.pdf" )
-col <- c("red", "white", "blue")
-aheatmap(qVsPrsBaselineZscores[qWithHit,], scale = "none", Colv = hmData$Colv, breaks = c(-40,-4,4,40))
-dev.off()
-
-
-save(prs2, qVsPrsBaselineZscores, file = "heatmapData.Rdata")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 
 library(pheatmap)
 
-setwd("D:\\UMCG\\Genetica\\Projects\\Covid19\\pgs\\")
 
-a <- matrix(c(1,2,3,4), nrow = 2, byrow = T)
-
-
-col <- colorRampPalette(c("navy", "white", "firebrick3"))(3)
-
-pheatmap(a, scale = "none", color = col, Rowv = NA, Colv = NA)
-
-pheatmap(a, scale = "none", color = col, breaks = c(1,3,4,5), Rowv = NA, Colv = NA)
-
-
-str(seq(min(a), max(a), length.out = 3))
-
-
-load("D:\\UMCG\\Genetica\\Projects\\Covid19\\pgs\\heatmapData.Rdata")
 
 str(qVsPrsBaselineZscores)
 
@@ -124,9 +90,9 @@ prsClust <- hclust(prsDist)
 
 col <-colorRampPalette(c("firebrick3", "white", "navy"))(200)
 
-
+rpng()
 pheatmap(prsCor, scale = "none", color = col, cluster_cols = prsClust, breaks = seq(-1,1,length.out = 201), cluster_rows = prsClust, show_rownames =T, show_colnames = F, cellwidth = 10, cellheight = 10, treeheight_row = 0, treeheight_col = 0, filename = "heatmapPrs.pdf")
-
+dev.off()
 
 
 colorRampPalette(c("navy", "white", "firebrick3"))(200)
@@ -156,6 +122,10 @@ qClust <- hclust(dist(qVsPrsBaselineZscoresSig, method = "euclidean"), method = 
 
 
 pheatmap(qVsPrsBaselineZscores, scale = "none", color = col, cluster_cols = prsClust, breaks = colBreaks, cluster_rows = qClust, show_rownames =F, cellwidth = 5, cellheight = 5, treeheight_row = 40, treeheight_col = 0, legend_breaks = c(-10, -round(bonThres, digits = 2), round(bonThres, digits = 2), 10,20,30,40))
+rpng.off()
 
 
-pheatmap(qVsPrsBaselineZscores, scale = "none", color = col, cluster_cols = prsClust, breaks = colBreaks, cluster_rows = qClust, show_rownames =T, cellwidth = 10, cellheight = 10, filename = "heatmap.pdf", treeheight_row = 0 legend_breaks = c(-10, -round(bonThres, digits = 2), round(bonThres, digits = 2), 10,20,30,40))
+
+
+
+pheatmap(qVsPrsBaselineZscores, scale = "none", color = col, cluster_cols = prsClust, breaks = colBreaks, cluster_rows = qClust, show_rownames =T, cellwidth = 10, cellheight = 10, filename = "heatmap.pdf", treeheight_row = 0, legend_breaks = c(-10, -round(bonThres, digits = 2), round(bonThres, digits = 2), 10,20,30,40))
