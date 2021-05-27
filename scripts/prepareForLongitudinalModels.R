@@ -15,7 +15,7 @@ prsLabelFile <- "prsLables.txt"
 inclusionPrVlFile <- "inclusionPerVl.txt"
 prsGsaFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_behaviour/PRS_correlation/input_PGS_data_ugli_v4/PGS_combined_ugli_07-04-2021.txt"
 prsCytoFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/risky_behaviour/PRS_correlation/input_PGS_data_cyto_v4_duplicate_filtered/PGS_combined_cyto_duplicate_from_ugli_removed_07-04-2021.txt"
-qOverviewFile <- "quest_overview_nl_new_quest17_codes_updated_14-days-include-complete-qof.txt"
+qOverviewFile <- "quest_overview_nl_new_quest17_codes_updated_14-days_v2.txt"
 selectedPrsFile <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/pgs_correlations/selectedTraits.txt"
 validationSamplesFile <- "validationSamples.txt"
 longitudinalSelectionRecodingFile <- "longitudinalQuestionSelection_20210527.txt"
@@ -219,6 +219,7 @@ selectedQ <- selectedQ[selectedQ[,"Question"] %in% qNameMap[,1],]
 selectedQ$qId <- qNameMap[selectedQ[,"Question"],2]
 rownames(selectedQ) <- selectedQ[,"qId"]
 
+
 ## Add first / last day for selectedQ
 
 str(!is.na(vragenLong[,selectedQ[,"qId"][1]]))
@@ -252,6 +253,7 @@ for (qIndex in (1:nrow(selectedQ))) {
   q <- rownames(selectedQ)[qIndex]
   qName <- selectedQ[qIndex, "Question"]
   qInfo <- selectedQ[q,]
+
   Used_in_longitudinal_analysis <- selectedQ[q, "Used_in_longitudinal_analysis"]
   valueLabelsAsJson <- selectedQ[qIndex, "recode_value_labels"]
   

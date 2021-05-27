@@ -4,11 +4,12 @@ library(nlme)
 library(heatmap3)
 library(readr)
 library(lme4)
-#library(future.apply)
+library(future.apply)
 library(survival)
 library(parallel)
 
 workdir <- "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/pgs_correlations/"
+intermediatesdir <-  "/groups/umcg-lifelines/tmp01/projects/ov20_0554/analysis/pgs_correlations/longiIntermediates/"
 preparedDataFile <- "longitudinal.RData"
 
 setwd(workdir)
@@ -16,61 +17,6 @@ load(preparedDataFile)
 
 
 #Functions:
-spread_factor_columns <- function(df) {
-  variables <- colnames(df)
-  # For all columns, check if it is a factor,
-  # if so, spread levels across columns as 0/1.
-  # else, copy the column as is.
-  out <- do.call("cbind", lapply(variables, function(variable) {
-    col <- df[,variable]
-    if (is.factor(col)) {
-      # For all levels, add a numeric column (0/1) indicating the
-      # factor value for the row.
-      uniqueLevels <- levels(col)
-      colDf <- as.data.frame(lapply(uniqueLevels, function(factorLevel) {
-        levelBool <- as.numeric(col == factorLevel)
-      }))
-      colnames(colDf) <- paste0(variable, uniqueLevels)
-      return(colDf)
-    } else {
-      colDf <- data.frame(col)
-      colnames(colDf) <- variable
-      return(colDf)
-    }
-  }))
-  return(out)
-}
-# Function to predict outcome values given a new dataset, 
-# named coefficient list (from a meta-analysis),
-# the model on which analysis is based
-predict_meta <- function(df, coefficients, family) {
-  # Spread all factor levels across columns for all columns that are factors.
-  dfSpread <- spread_factor_columns(df)
-  # Calculate the predicted values per term
-  predictionPerTerm <- do.call("cbind", sapply(
-    names(coefficients), 
-    function(coefficientLabel) {
-      # Coefficient
-      coefficient <- coefficients[coefficientLabel]
-      # Parse coefficient label,
-      # Find out which columns should be multiplied
-      variablesToMultiply <- strsplit(coefficientLabel, ":", fixed = T)[[1]]
-      if (all(variablesToMultiply == "(Intercept)")) {
-        return(data.frame(coefficientLabel = rep(coefficient, nrow(dfSpread))))
-      } else if (length(variablesToMultiply) == 2) {
-        return(Reduce(`*`, dfSpread[variablesToMultiply]) * coefficient)
-      } else if (length(variablesToMultiply == 1)) {
-        return(dfSpread[variablesToMultiply] * coefficient)
-      } else {
-        stop("Something went wrong, or we are going to multiply more than two terms. Check if this works first!")
-      }
-    }))
-  # Calculate the predicted values on a regular linear scale
-  predicted <- rowSums(predictionPerTerm)
-  # Return values according to the linear inverse of the link function
-  return(family$linkinv(predicted))
-}
-
 
 inverseVarianceMeta <- function(resultsPerArray, seCol, valueCol){
   x <- as.data.frame(resultsPerArray[[1]][,FALSE])
@@ -91,16 +37,28 @@ inverseVarianceMeta <- function(resultsPerArray, seCol, valueCol){
   return(metaRes)
 }
 
-#qPrs <- qVsPrsRecode2[qVsPrsRecode2[,"prsTrait"] == "Life.satisfaction",][1,]
-fitModel <- function(qPrs, selectedQ, vragenLong, arrayList){
+
+fitModel <- function(qPrs, selectedQ, arrayList){
   
-  library(nlme)
-  library(lme4)
+ # library(nlme)
+#  library(lme4)
   
   #zScores = tryCatch({
   print(paste(qPrs["question"], qPrs["prsTrait"], sep = " - "))
   
   q <- qPrs["question2"]
+  
+  intermediateFile <- make.names(paste0(qPrs["question"], "_", qPrs["prsTrait"]))
+  intermediatePath <- paste0(intermediatesdir, "/" , intermediateFile, ".rds")
+  
+  fullRes <- NA
+  
+  if(FALSE ){
+    #file.exists(intermediatePath)
+    #Load exising results
+    fullRes <- readRDS(intermediatePath)
+  } else {
+    #calculate new results
   
   if(!q %in% rownames(selectedQ)){
     print("skip")
@@ -108,6 +66,14 @@ fitModel <- function(qPrs, selectedQ, vragenLong, arrayList){
   }
   
   qInfo <- selectedQ[q,]
+  
+  if(!qPrs["Used_in_longitudinal_analysis"]){
+    print("skip")
+    return(list("resPerArray" = NA, "metaRes" = NA, "qPrs" = qPrs, "error" = "Not longitudinal"))
+  }
+    
+  
+  
   usedPrs <- qPrs["prsTrait"]
   # usedPrs <- usedPrs[!usedPrs %in% "Cigarettes.per.day"]
   #usedPrs <- c("BMI_gwas", "Life.satisfaction", "Neuroticism")
@@ -132,40 +98,50 @@ fitModel <- function(qPrs, selectedQ, vragenLong, arrayList){
         
         d <- vragenLong[!is.na(vragenLong[,q]) & vragenLong$array == array,c("PROJECT_PSEUDO_ID", q,usedPrs,"gender_recent","age_recent","age2_recent","household_recent","have_childs_at_home_recent","chronic_recent", "days", "days2", "days3", "vl")]
         table(d[,q])
-        coef <- 0
+        coef <- NA
         
-        if(qInfo["Type"] == "gaussian" & qInfo["Mixed"]){
-          res <-  lme(fixed = fixedModel, random=randomModel, data=d,na.action=na.omit, control = lmeControl(opt = "optim"))#
+        if(qInfo["TypeLongitudinal"] == "gaussian" & qInfo["Mixed"]){
+          print("test1")
+          #res <-  lme(fixed = fixedModel, random=randomModel, data=d,na.action=na.omit, control = lmeControl(opt = "optim"))#
+          res <- 1
           return(res)
-        } else if (qInfo["Type"] == "gaussian" & !qInfo["Mixed"]) {
+        } else if (qInfo["TypeLongitudinal"] == "gaussian" & !qInfo["Mixed"]) {
+          print("test2")
           stop("Not implement")
-        } else if (qInfo["Type"] == "binomial" & qInfo["Mixed"]) {
+        } else if (qInfo["TypeLongitudinal"] == "binomial" & qInfo["Mixed"]) {
+          print("test3")
           if(max(d[,q])==2){
             d[,q] <- d[,q] -1
           }
           if(sum(range(d[,q])==0:1)!=2){
-            stop("not binomal")
+            stop("not binomal: " )
           }
           glmMerFit <- glmer(fullModel, data = d, family = binomial, nAGQ=0 )
           return(glmMerFit)
         } else if (qInfo["Type"] == "binomial" & !qInfo["Mixed"]) {
+          print("test4")
           d[,q] <- as.factor(d[,q])
           glmBinomFit <- glm(fixedModel ,family=binomial(link='logit'),data=d)
           return(glmBinomFit)
+        } else {
+          error("no model")
         }
         
         return(coef)
       })
     },
     error=function(cond){
+      print("ERROR")
       message(paste("ERROR:", qPrs["question"], qPrs["prsTrait"],cond))
-      return(list("resPerArray" = NA, "metaRes" = NA, "qPrs" = qPrs, "error" = cond$message))
+      fullRes <- list("resPerArray" = NA, "metaRes" = NA, "qPrs" = qPrs, "error" = cond$message)
+      return(fullRes)
     }
   )#end try catch
   
   
-  if(is.na(resultsPerArray[[1]])){
+  if(is.na(resultsPerArray[1])){
     #contains list with info
+    saveRDS(resultsPerArray, intermediatePath)
     return(resultsPerArray)
   }
   
@@ -195,15 +171,21 @@ fitModel <- function(qPrs, selectedQ, vragenLong, arrayList){
   coefPerArray[[1]]
   coefPerArray[[2]]
   
-  fullRes <- list("resPerArray" = resultsPerArray, "metaRes" = metaRes, "qPrs" = qPrs, "error" = NA)
+  fullRes <- list("resPerArray" = resultsPerArray, "metaRes" = metaRes, "qPrs" = qPrs, "error" = NA, "fixedModel" = fixedModel, "randomModel" = randomModel, "fullModel" = fullModel)
+  saveRDS(fullRes, intermediatePath)
+  }
   
   return(fullRes)
   
 }
 
+qPrs <- qVsPrsRecode2[10,]
+
+test <- apply(qVsPrsRecode2[10,,drop =F], 1, fitModel, selectedQ = selectedQ, arrayList = arrayList)
+test
 
 
-qVsPrs <- read.delim("gwasses_to_perform_filtered.txt", stringsAsFactors = F)
+qVsPrs <- read.delim("gwasses_to_perform_filtered_include_14_days.txt", stringsAsFactors = F)
 if(!all(qVsPrs$X %in% rownames(qNameMap))){
   stop("Not all Q found")
 }
@@ -231,23 +213,48 @@ q<-qNameMap["hoeveel zorgen maakte u zich de afgelopen 14 dagen over de corona-c
 q<-qNameMap["hoe waardeert u uw kwaliteit van leven over de afgelopen 14 dagen? (include 7 days)",2]
 
 
-
-clust <- makeCluster(8)
-clusterExport(clust, "inverseVarianceMeta")
-resultList <- parApply(clust, qVsPrsRecode2[qVsPrsRecode2[,"prsTrait"] == "Life.satisfaction",], 1, fitModel, selectedQ = selectedQ, vragenLong = vragenLong, arrayList = arrayList)
+clust <- makeForkCluster(nnodes = 8)
+clusterExport("vragenLong")
+clusterExport("intermediatesdir")
+clusterEvalQ(clust, {
+  library(lme4)
+  library(nlme)
+})
+resultList <- parApply(clust, qVsPrsRecode2, 1, fitModel, selectedQ = selectedQ, arrayList = arrayList)
 stopCluster(clust)
 
+str(resultList[[1]], max.level = 1)
+
+resultList <- apply(qVsPrsRecode2, 1, fitModel, selectedQ = selectedQ, arrayList = arrayList)
 
 
+resultList <- parApply(clust, qVsPrsRecode2[qVsPrsRecode2[,"prsTrait"] == "Schizophrenia",], 1, fitModel, selectedQ = selectedQ, arrayList = arrayList)
+
+i <- 0 
 a <- lapply(resultList, function(x){
-  if(!is.na(x[["metaRes"]]))
+  
+  i <<- i + 1
+  
+  if(!is.na(x["metaRes"]))
   {
-    print(paste(x[["qPrs"]]["question"], x[["qPrs"]]["prsTrait"], sep = " - "))
     r <- nrow(x[["metaRes"]])
-    print(x[["metaRes"]][r,"z"])
-  }
+    z <- x[["metaRes"]][r,"z"]
+    
+    if(!is.null(z)){
+      if(abs(z)>= 2.5){
+      print(paste(i, x[["qPrs"]]["question"], x[["qPrs"]]["prsTrait"], sep = " - "))
+        print(paste("Zscore", z))
+      }
+      
+      }
+    }
 })
 
+
+
+str(summary)
+
+summary(resultList[[9]])
 
 str(resultList)
 
