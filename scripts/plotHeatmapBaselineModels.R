@@ -90,9 +90,8 @@ prsClust <- hclust(prsDist)
 
 col <-colorRampPalette(c("firebrick3", "white", "navy"))(200)
 
-rpng()
+
 pheatmap(prsCor, scale = "none", color = col, cluster_cols = prsClust, breaks = seq(-1,1,length.out = 201), cluster_rows = prsClust, show_rownames =T, show_colnames = F, cellwidth = 10, cellheight = 10, treeheight_row = 0, treeheight_col = 0, filename = "heatmapPrs.pdf")
-dev.off()
 
 
 colorRampPalette(c("navy", "white", "firebrick3"))(200)
