@@ -110,33 +110,31 @@ resultList <- apply(qVsPrsRecode2, 1, loadModel, selectedQ = selectedQ, arrayLis
 
 i <- 0 
 
-resultList2 <- resultList[sapply(resultList, function(x){!is.null(x)})]
+#resultList2 <- resultList[sapply(resultList, function(x){!is.null(x)})]
 
-summary <- sapply(resultList2, function(x){
+summary <- sapply(resultList, function(x){
   i <<- i + 1
   print(i)
-  print(is.null(x))
-  if( !is.na(x)){
     
     q <- x[["qPrs"]]["question"]
     p <- x[["qPrs"]]["prsTrait"]
-    r <- nrow(x[["metaRes"]])
-    z <- x[["metaRes"]][r,"z"]
+    if(!is.na(x["metaRes"])){
+      r <- nrow(x[["metaRes"]])
+      z <- x[["metaRes"]][r,"z"]
+    } else{
+      z <- NA
+    }
     e <- x[["error"]]
     
     return(c(q,p,z,e))
     
-  }
   
   
   
 })
 
-str(summary)
 
-summary2 <- do.call(rbind, summary)
-
-write.table(summary2, file = "interactionSummary.txt", sep = "\t", quote = F)
+write.table(t(summary), file = "interactionSummary.txt", sep = "\t", quote = F, row.names = F)
 
 colHigh = "#6300A7"
 colMedium = "#D5546E"
@@ -186,8 +184,8 @@ daysSeq <- qInfo[,"firstDay"]:qInfo[,"lastDay"]
 
 qLable <- qInfo[,"label_en"]
 
-prsRange <- quantile(prs[,usedPrs],probs = seq(0,1,0.1))
-prsRange2 <- prsRange[c(10,6,2)]
+prsRange <- quantile(vragenLong[,usedPrs],probs = seq(0,1,0.1))
+prsRange2 <- prsRange[c(9,6,3)]
 
 
 par(mar = c(0,0,0,0), xpd = NA)
@@ -206,14 +204,13 @@ for(array in arrayList){
   d <- vragenLong[!is.na(vragenLong[,q]) & vragenLong$array == array,c("PROJECT_PSEUDO_ID", q,usedPrs,"gender_recent","age_recent","age2_recent","household_recent","have_childs_at_home_recent","chronic_recent", "days", "days2", "days3", "vl")]
   
   predictions <- ggeffect(res, terms = c("days[daysSeq]", paste0(usedPrs,"[prsRange2]")) , type = "fixed" ) 
+  plot(predictions)
   
-  
-  
-  
+  tail(as.matrix(predictions))
   ## 
   par(mar = c(3,5,1,0), xpd = NA)
   plot.new()
-  plot.window(xlim = c(startday,endday), ylim = range(predictions$conf.low,predictions$conf.high))
+  plot.window(xlim = c(startday,endday), ylim = range(predictions$conf.low,predictions$conf.high, na.rm=T))
   #plot.window(xlim = c(startday,endday), ylim = c(1,10))
   axis(side = 1, at = axisAt, labels = format.Date( axisAt+startdate, "%d-%b-%Y"), col = colAxis, col.axis = colMean)
   axis(side = 2, col = colAxis, col.axis = colMean)
@@ -229,6 +226,15 @@ for(array in arrayList){
   polygon(c(predictionsHigh$x, rev(predictionsHigh$x)), y = c(predictionsHigh$conf.low, rev(predictionsHigh$conf.high)), col = adjustcolor(colHigh, alpha.f = 0.2), border = NA)
   
   vlForThisQ <- unique(d$vl)
+  
+  sapply(vlForThisQ, function(x){
+    dVl <- d[d$vl==vl,]
+    day <- median(dVl$days)
+    meanHigh <- mean(dVl[dVl[,usedPrs] >= prsRange2[1],q])
+    meanLow <- mean(dVl[dVl[,usedPrs] <= prsRange2[3],q])
+    meanRest <- mean(dVl[dVl[,usedPrs] > prsRange2[3] & dVl[,usedPrs] < prsRange2[1],q])
+    return(day, meanHigh, meanLow, MeanRest)
+  })
   
   for(vl in vlForThisQ){
     dVl <- d[d$vl==vl,]
@@ -250,7 +256,7 @@ for(array in arrayList){
   points(predictionsLow$x, predictionsLow$predicted, col = colLow, type = "l", lwd = 2)
   points(predictionsMedium$x, predictionsMedium$predicted, col = colMedium, type = "l", lwd = 2)
   points(predictionsHigh$x, predictionsHigh$predicted, col = colHigh, type = "l", lwd = 2)
-  
+  dev.off()
   
   ##
   

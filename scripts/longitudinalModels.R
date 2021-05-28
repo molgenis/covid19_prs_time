@@ -39,21 +39,24 @@ inverseVarianceMeta <- function(resultsPerArray, seCol, valueCol){
 
 
 fitModel <- function(qPrs, selectedQ, arrayList){
+
+  print(str(qPrs))
+  print(ls())
+
+  print(qPrs["question"])
   
- # library(nlme)
-#  library(lme4)
-  
-  #zScores = tryCatch({
   print(paste(qPrs["question"], qPrs["prsTrait"], sep = " - "))
   
   q <- qPrs["question2"]
+  print(q)
+  
   
   intermediateFile <- make.names(paste0(qPrs["question"], "_", qPrs["prsTrait"]))
   intermediatePath <- paste0(intermediatesdir, "/" , intermediateFile, ".rds")
   
   fullRes <- NA
   
-  if(FALSE ){
+  if(file.exists(intermediatePath) ){
     #file.exists(intermediatePath)
     #Load exising results
     fullRes <- readRDS(intermediatePath)
@@ -62,12 +65,13 @@ fitModel <- function(qPrs, selectedQ, arrayList){
   
   if(!q %in% rownames(selectedQ)){
     print("skip")
+    print(ls())
     return(list("resPerArray" = NA, "metaRes" = NA, "qPrs" = qPrs, "error" = "Not in selected Q"))
   }
-  
+
   qInfo <- selectedQ[q,]
   
-  if(!qPrs["Used_in_longitudinal_analysis"]){
+  if(!qInfo["Used_in_longitudinal_analysis"]){
     print("skip")
     return(list("resPerArray" = NA, "metaRes" = NA, "qPrs" = qPrs, "error" = "Not longitudinal"))
   }
@@ -102,8 +106,7 @@ fitModel <- function(qPrs, selectedQ, arrayList){
         
         if(qInfo["TypeLongitudinal"] == "gaussian" & qInfo["Mixed"]){
           print("test1")
-          #res <-  lme(fixed = fixedModel, random=randomModel, data=d,na.action=na.omit, control = lmeControl(opt = "optim"))#
-          res <- 1
+          res <-  lme(fixed = fixedModel, random=randomModel, data=d,na.action=na.omit, control = lmeControl(opt = "optim"))#
           return(res)
         } else if (qInfo["TypeLongitudinal"] == "gaussian" & !qInfo["Mixed"]) {
           print("test2")
@@ -116,15 +119,18 @@ fitModel <- function(qPrs, selectedQ, arrayList){
           if(sum(range(d[,q])==0:1)!=2){
             stop("not binomal: " )
           }
+          if(is.character(d[,q])){
+            d[,q] <- as.numeric(d[,q])
+          }
           glmMerFit <- glmer(fullModel, data = d, family = binomial, nAGQ=0 )
           return(glmMerFit)
-        } else if (qInfo["Type"] == "binomial" & !qInfo["Mixed"]) {
+        } else if (qInfo["TypeLongitudinal"] == "binomial" & !qInfo["Mixed"]) {
           print("test4")
           d[,q] <- as.factor(d[,q])
           glmBinomFit <- glm(fixedModel ,family=binomial(link='logit'),data=d)
           return(glmBinomFit)
         } else {
-          error("no model")
+          stop("no model")
         }
         
         return(coef)
@@ -148,17 +154,17 @@ fitModel <- function(qPrs, selectedQ, arrayList){
   
   coefPerArray <- lapply(resultsPerArray, function(res){
     coef <- 0
-    if(qInfo["Type"] == "gaussian" & qInfo["Mixed"]){
+    if(qInfo["TypeLongitudinal"] == "gaussian" & qInfo["Mixed"]){
       print("test1")
       coef <- summary(res)$tTable
-    } else if (qInfo["Type"] == "gaussian" & !qInfo["Mixed"]) {
+    } else if (qInfo["TypeLongitudinal"] == "gaussian" & !qInfo["Mixed"]) {
       print("test2")
       stop("Not implement")
-    } else if (qInfo["Type"] == "binomial" & qInfo["Mixed"]) {
+    } else if (qInfo["TypeLongitudinal"] == "binomial" & qInfo["Mixed"]) {
       print("test3")
       coef <- summary(res)$coefficients
       colnames(coef)[1:2]<-c("Value", "Std.Error")
-    } else if (qInfo["Type"] == "binomial" & !qInfo["Mixed"]) {
+    } else if (qInfo["TypeLongitudinal"] == "binomial" & !qInfo["Mixed"]) {
       print("test4b")
       coef <- summary(res)$coefficients
       colnames(coef)[1:2]<-c("Value", "Std.Error")
@@ -178,11 +184,6 @@ fitModel <- function(qPrs, selectedQ, arrayList){
   return(fullRes)
   
 }
-
-qPrs <- qVsPrsRecode2[10,]
-
-test <- apply(qVsPrsRecode2[10,,drop =F], 1, fitModel, selectedQ = selectedQ, arrayList = arrayList)
-test
 
 
 qVsPrs <- read.delim("gwasses_to_perform_filtered_include_14_days.txt", stringsAsFactors = F)
@@ -205,13 +206,9 @@ colnames(qVsPrsRecode2) <- c("question", "question2", "prsTrait")
 
 head(qVsPrsRecode2)
 
-qLoop2 <- qLoop[names(qLoop) %in% qVsPrs$X]
 
-q<-qNameMap["BMI",2]
-q<-qNameMap["BMI",2]
-q<-qNameMap["hoeveel zorgen maakte u zich de afgelopen 14 dagen over de corona-crisis?",2]
-q<-qNameMap["hoe waardeert u uw kwaliteit van leven over de afgelopen 14 dagen? (include 7 days)",2]
-
+#qPrs <- qVsPrsRecode2[1,]
+#fitModel(qVsPrsRecode2[20,], selectedQ = selectedQ, arrayList = arrayList)
 
 clust <- makeForkCluster(nnodes = 8)
 clusterExport("vragenLong")
@@ -224,6 +221,8 @@ resultList <- parApply(clust, qVsPrsRecode2, 1, fitModel, selectedQ = selectedQ,
 stopCluster(clust)
 
 str(resultList[[1]], max.level = 1)
+
+qPrs <- qVsPrsRecode2[qVsPrsRecode2[,"prsTrait"] == "Depression..broad." & qVsPrsRecode2[,"question2"] == "bedroefd...in.welke.mate.heeft.u.zich.de.afgelopen.14.dagen.zo.gevoeld.",]
 
 resultList <- apply(qVsPrsRecode2, 1, fitModel, selectedQ = selectedQ, arrayList = arrayList)
 
