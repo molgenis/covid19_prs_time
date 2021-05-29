@@ -72,36 +72,15 @@ predict_meta <- function(df, coefficients, family) {
 }
 
 
-loadModel <- function(qPrs, selectedQ, arrayList){
-  
-  # library(nlme)
-  #  library(lme4)
-  
-  #zScores = tryCatch({
-  print(paste(qPrs["question"], qPrs["prsTrait"], sep = " - "))
-  
-  q <- qPrs["question2"]
-  
-  intermediateFile <- make.names(paste0(qPrs["question"], "_", qPrs["prsTrait"]))
-  intermediatePath <- paste0(intermediatesdir, "/" , intermediateFile, ".rds")
-  
-  
-  
-  if(file.exists(intermediatePath)){
-    #Load exising results
-    fullRes <- readRDS(intermediatePath)
-    return(fullRes)
-  }
-  
-}
+
 
 
 prsLabels <- as.matrix(read.delim(prsLabelFile, stringsAsFactors = F, row.names = 1))[,1]
 
 
+resultList <- sapply(list.files(intermediatesdir, pattern = "*.rds", full.names = T), readRDS)
 
 
-resultList <- apply(qVsPrsRecode2, 1, loadModel, selectedQ = selectedQ, arrayList = arrayList)
 
 
 
@@ -109,32 +88,51 @@ resultList <- apply(qVsPrsRecode2, 1, loadModel, selectedQ = selectedQ, arrayLis
 
 
 i <- 0 
-
-#resultList2 <- resultList[sapply(resultList, function(x){!is.null(x)})]
-
-summary <- sapply(resultList, function(x){
+summary <- lapply(resultList, function(x){
   i <<- i + 1
   print(i)
     
     q <- x[["qPrs"]]["question"]
-    p <- x[["qPrs"]]["prsTrait"]
+    t <- x[["qPrs"]]["prsTrait"]
     if(!is.na(x["metaRes"])){
       r <- nrow(x[["metaRes"]])
       z <- x[["metaRes"]][r,"z"]
+      p <- x[["metaRes"]][r,"p"]
     } else{
       z <- NA
+      p <- NA
     }
     e <- x[["error"]]
     
-    return(c(q,p,z,e))
+    return(data.frame(q,t,p,z,e))
     
   
   
   
 })
 
+summary <- do.call(rbind, summary)
+str(summary)
 
-write.table(t(summary), file = "interactionSummary.txt", sep = "\t", quote = F, row.names = F)
+colnames(selectedQ)
+
+
+#not skip 7 days and not NA result
+
+
+
+
+
+summary2 <- summary[!selectedQ$skip_7_days[match(summary$q, selectedQ$Question)] & !is.na(summary[,"z"]), ]
+
+
+summary2$fdr <- p.adjust(summary2[,"p"], method = "BH")
+sum(summary2$fdr <= 0.05)
+
+
+
+
+write.table(summary2, file = "interactionSummary.txt", sep = "\t", quote = F, row.names = F)
 
 colHigh = "#6300A7"
 colMedium = "#D5546E"
