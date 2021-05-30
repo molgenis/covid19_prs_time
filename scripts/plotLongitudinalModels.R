@@ -71,6 +71,26 @@ predict_meta <- function(df, coefficients, family) {
   return(family$linkinv(predicted))
 }
 
+getScientificNUmberExpressionPrefix <- function(prefix, x, suffics, digits = 2){
+  if(is.infinite(x)){
+    stop("Error inf")
+  }
+  b <- x
+  e <- 0
+  if(b >= 10){
+    while(b >= 10){
+      b <- b /10
+      e <- e + 1
+    }
+  } else if(b < 1 & b != 0) {
+    while(b < 1){
+      b <- b * 10
+      e <- e - 1
+    }
+  }
+  b <- round(b, digits)
+  return(bquote(paste(.(prefix), .(b) %*% 10 ^{.(e)},.(suffics))))
+}
 
 
 
@@ -82,8 +102,10 @@ resultList <- sapply(list.files(intermediatesdir, pattern = "*.rds", full.names 
 
 
 
-
-
+resultsListNames <- sapply(resultList, function(x){
+  return(paste0(x$qPrs["question2"],"_", x$qPrs["prsTrait"]))
+})
+names(resultList) <- resultsListNames
 
 
 
@@ -93,6 +115,7 @@ summary <- lapply(resultList, function(x){
   print(i)
     
     q <- x[["qPrs"]]["question"]
+    q2 <- x[["qPrs"]]["question2"]
     t <- x[["qPrs"]]["prsTrait"]
     if(!is.na(x["metaRes"])){
       r <- nrow(x[["metaRes"]])
@@ -104,7 +127,7 @@ summary <- lapply(resultList, function(x){
     }
     e <- x[["error"]]
     
-    return(data.frame(q,t,p,z,e))
+    return(data.frame(q,q2,t,p,z,e))
     
   
   
@@ -112,27 +135,25 @@ summary <- lapply(resultList, function(x){
 })
 
 summary <- do.call(rbind, summary)
-str(summary)
 
-colnames(selectedQ)
+
 
 
 #not skip 7 days and not NA result
-
-
-
-
-
 summary2 <- summary[!selectedQ$skip_7_days[match(summary$q, selectedQ$Question)] & !is.na(summary[,"z"]), ]
 
-
 summary2$fdr <- p.adjust(summary2[,"p"], method = "BH")
+write.table(summary2, file = "interactionSummary.txt", sep = "\t", quote = F, row.names = F)
+
+
+
+
 sum(summary2$fdr <= 0.05)
 
+summary3 <- summary2[summary2$fdr <= 0.05,]
 
 
 
-write.table(summary2, file = "interactionSummary.txt", sep = "\t", quote = F, row.names = F)
 
 colHigh = "#6300A7"
 colMedium = "#D5546E"
@@ -154,16 +175,26 @@ fullRes <- readRDS(paste0(intermediatesdir,"/Positive.tested.cumsum_COVID.19.sus
 
 #lapply(resultList, function(fullRes){
 
-pdf("interactionPlots.pdf", width = 10, height = 6)
+
 
 ######
+
+i <- 1
+
+pdf("interactionPlots.pdf", width = 10, height = 6)
+for(i in 1:nrow(summary3)){
+  
+print(i)
+
+fullRes <- resultList[[paste0(summary3[i, "q2"],"_",summary3[i, "t"])]]
+
 
 fixedModel <- fullRes$fixedModel
 randomModel <- fullRes$randomModel
 fullModel <- fullRes$fullModel
 
 
-layout(matrix(c(1,1,2,4,3,5), ncol = 2, byrow = T))
+layout(matrix(c(1,1,2,4,3,5), ncol = 2, byrow = T), heights = c(0.2,1,1))
 
 qPrs <- fullRes$qPrs
 usedPrs <- qPrs["prsTrait"]
@@ -177,20 +208,53 @@ interactionZ <- fullRes$metaRes[interactionTerm,"z"]
 q <- qPrs["question2"]
 qInfo <- selectedQ[q,]
 
-daysSeq <- qInfo[,"firstDay"]:qInfo[,"lastDay"]
-
+#daysSeq <- qInfo[,"firstDay"]:qInfo[,"lastDay"]
+daysSeq <- seq(qInfo[,"firstDay"],qInfo[,"lastDay"],10)
 
 qLable <- qInfo[,"label_en"]
 
-prsRange <- quantile(vragenLong[,usedPrs],probs = seq(0,1,0.1))
-prsRange2 <- prsRange[c(9,6,3)]
+prsRange <- quantile(vragenLong[!is.na(vragenLong[,q]),usedPrs],probs = seq(0,1,0.1))
+prsRange2 <- prsRange[c(10,6,2)]
 
 
 par(mar = c(0,0,0,0), xpd = NA)
 plot.new()
 plot.window(xlim = 0:1, ylim = 0:1)
 text(0.5,0.75,paste0("Model fitted on '", qLable, "' stratified by '", prsLabel, "'"), cex = 2 , font = 2)
-text(0.5,0.25,paste0("Interaction P-value: ", interactionP, " Z-score: ", interactionZ  , ""), cex = 1 , font = 1)
+
+if(interactionP < 0.01){
+  text(0.5,0.25, getScientificNUmberExpressionPrefix("Interaction P-value: ", interactionP,paste0(" Z-score: ", format(interactionZ,nsmall = 2, digits = 2))))
+} else {
+  text(0.5,0.25,paste0("Interaction P-value: ", interactionP, " Z-score: ", format(interactionZ,nsmall = 2, digits = 2)), cex = 1 , font = 1)
+}
+
+yRanges <- sapply(arrayList, function(array){
+  
+  res <- fullRes$resPerArray[[array]]
+  
+  d <- vragenLong[!is.na(vragenLong[,q]) & vragenLong$array == array,c("PROJECT_PSEUDO_ID", q,usedPrs,"gender_recent","age_recent","age2_recent","household_recent","have_childs_at_home_recent","chronic_recent", "days", "days2", "days3", "vl")]
+  
+  
+  
+  predictions <- ggeffect(res, terms = c("days[daysSeq]", paste0(usedPrs,"[prsRange2]")) , type = "fixed" ) 
+  plot(predictions)# 
+  
+  vlForThisQ <- unique(d$vl)
+  plotYRange <- range(predictions$conf.low,predictions$conf.high, na.rm=T)
+  sapply(vlForThisQ, function(vl){
+    dVl <- d[d$vl==vl,]
+    meanHigh <- mean(dVl[dVl[,usedPrs] >= prsRange2[1],q])
+    meanLow <- mean(dVl[dVl[,usedPrs] <= prsRange2[3],q])
+    meanRest <- mean(dVl[dVl[,usedPrs] > prsRange2[3] & dVl[,usedPrs] < prsRange2[1],q])
+    plotYRange <<- range(plotYRange,meanHigh, meanLow, meanRest)
+  })
+  return(plotYRange)
+  
+})
+
+yRange <- range(yRanges)
+
+
 
 
 for(array in arrayList){
@@ -202,13 +266,18 @@ for(array in arrayList){
   d <- vragenLong[!is.na(vragenLong[,q]) & vragenLong$array == array,c("PROJECT_PSEUDO_ID", q,usedPrs,"gender_recent","age_recent","age2_recent","household_recent","have_childs_at_home_recent","chronic_recent", "days", "days2", "days3", "vl")]
   
   predictions <- ggeffect(res, terms = c("days[daysSeq]", paste0(usedPrs,"[prsRange2]")) , type = "fixed" ) 
-  plot(predictions)
+#  plot(predictions)
+  
+  
+  
+  
+  
   
   tail(as.matrix(predictions))
   ## 
-  par(mar = c(3,5,1,0), xpd = NA)
+  par(mar = c(3,5,1,1), xpd = NA)
   plot.new()
-  plot.window(xlim = c(startday,endday), ylim = range(predictions$conf.low,predictions$conf.high, na.rm=T))
+  plot.window(xlim = c(startday,endday), ylim = yRange)
   #plot.window(xlim = c(startday,endday), ylim = c(1,10))
   axis(side = 1, at = axisAt, labels = format.Date( axisAt+startdate, "%d-%b-%Y"), col = colAxis, col.axis = colMean)
   axis(side = 2, col = colAxis, col.axis = colMean)
@@ -225,25 +294,18 @@ for(array in arrayList){
   
   vlForThisQ <- unique(d$vl)
   
-  sapply(vlForThisQ, function(x){
-    dVl <- d[d$vl==vl,]
-    day <- median(dVl$days)
-    meanHigh <- mean(dVl[dVl[,usedPrs] >= prsRange2[1],q])
-    meanLow <- mean(dVl[dVl[,usedPrs] <= prsRange2[3],q])
-    meanRest <- mean(dVl[dVl[,usedPrs] > prsRange2[3] & dVl[,usedPrs] < prsRange2[1],q])
-    return(day, meanHigh, meanLow, MeanRest)
-  })
+  
+  
+  
+  
   
   for(vl in vlForThisQ){
+  
     dVl <- d[d$vl==vl,]
     day <- median(dVl$days)
     meanHigh <- mean(dVl[dVl[,usedPrs] >= prsRange2[1],q])
     meanLow <- mean(dVl[dVl[,usedPrs] <= prsRange2[3],q])
     meanRest <- mean(dVl[dVl[,usedPrs] > prsRange2[3] & dVl[,usedPrs] < prsRange2[1],q])
-    
-    sdHigh <- sd(dVl[dVl[,usedPrs] >= prsRange2[1],q])
-    sdLow <- sd(dVl[dVl[,usedPrs] <= prsRange2[3],q])
-    sdRest <- sd(dVl[dVl[,usedPrs] > prsRange2[3] & dVl[,usedPrs] < prsRange2[1],q])
     
     points(day, meanHigh, pch = 5, col = colHigh)
     points(day, meanRest, pch = 5, col = colMedium)
@@ -254,7 +316,7 @@ for(array in arrayList){
   points(predictionsLow$x, predictionsLow$predicted, col = colLow, type = "l", lwd = 2)
   points(predictionsMedium$x, predictionsMedium$predicted, col = colMedium, type = "l", lwd = 2)
   points(predictionsHigh$x, predictionsHigh$predicted, col = colHigh, type = "l", lwd = 2)
-  dev.off()
+ # dev.off()
   
   ##
   
@@ -312,7 +374,7 @@ for(array in arrayList){
   
 }
 
-
+}
   dev.off()
   
   
