@@ -25,6 +25,12 @@ of the pandemic were selected for correlation with subjective quality of life.
 After preprocessing of the PGSs and traits, `./scripts/nationWideCorrelations.R` 
 is used for creating figures and correlations.
 
+## Correlating outcome variables and PGSs in baseline sample set
+We correlated 5 outcome variables that were assumed to tag the same genetics * time effect.
+Additionally, we correlated polygenic scores for all PGSs in the baseline sample set.
+After preprocessing of the PGSs and traits, `./scripts/correlationsForBaselineSamples.R`
+is used for creating figures and calculating these correlations.
+
 ## Comparison of included samples and invited samples for polygenic scores
 
 A comparison was done betwen samples that were invited in the studies and samples
