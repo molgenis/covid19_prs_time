@@ -9,6 +9,10 @@ Sample quality control is done in: `./scripts/sampleQc.R`
 Polygenic scores (PGSs) are calculated using the scripts in `./scripts/pgs-calculations`.
 The scripts are described [here](scripts/pgs-calculations).
 
+## Combine and filter questionnaire data and recode answer options
+The scripts used for combining and questionnaire data and recode the answer options can be found in `./scripts/combine-filter-and-recode-questionnaire-data`. 
+Description is available [here](scripts/combine-filter-and-recode-questionnaire-data`)
+
 ## Relation PGSs and traits
 
 ### Longitudinal models
@@ -19,7 +23,8 @@ The longitudinal models are fitted by: `/scripts/longitudinalModels.R`
 
 The plots of the longitudinal models are made using: `/scripts/plotLongitudinalModels.R`
 
-### Sensitivity analysis
+### Baseline associations and sensitivity analysis
+The scripts used for the baseline associations are avaiable in the `./scripts/baseline-and-validation-models/` directory. Description can be found [here](scripts/baseline-and-validation-models)
 
 ## Correlation with nation-wide statistics
 
