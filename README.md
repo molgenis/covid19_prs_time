@@ -2,7 +2,7 @@
 
 ## Quality control
 
-script: 
+Sample quality control is done in: `./scripts/sampleQc.R`
 
 ## PGS calculation
 
@@ -14,7 +14,7 @@ The scripts are described [here](scripts/pgs-calculations).
 ### Longitudinal models
 
 We selected ## questions for longitudinal models. The data was converted to long format and other preprocessing needed for the mixed models.
-After fitting the models the plots are made using this script: ####
+After fitting the models the plots are made using this script: `/scripts/`
 
 ### Validation models
 
