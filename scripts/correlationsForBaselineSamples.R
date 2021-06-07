@@ -23,6 +23,8 @@ pheno2 <- as.data.frame(pheno)
 row.names(pheno2) <- pheno2[,1]
 colnames(pheno2)[1] <- "PROJECT_PSEUDO_ID"
 
+startdate <- as.Date("30/03/2020","%d/%m/%Y")
+
 # Read the prs labels
 prsLabels <- as.matrix(read.delim(prsLabelFile, stringsAsFactors = F, row.names = 1))[,1]
 dim(pheno2)
@@ -45,7 +47,9 @@ tiredCor <- cor(correlationDf, use = "pairwise.complete.obs", method = "spearman
 diag(tiredCor) <- 1
 rownames(tiredCor) <- qSelectionRev[rownames(tiredCor)]
 colnames(tiredCor) <- qSelectionRev[colnames(tiredCor)]
-png("tiredCorrelation_20210601a.png", width = 800, height = 800)
+rownames(tiredCor)[rownames(tiredCor) == "Felt fine"] <- "Felt good"
+colnames(tiredCor)[colnames(tiredCor) == "Felt fine"] <- "Felt good"
+png("tiredCorrelation_20210607.png", width = 800, height = 800)
 heatmap3(tiredCor, balanceColor = T, margins = c(21,21), scale = "none")
 dev.off()
 

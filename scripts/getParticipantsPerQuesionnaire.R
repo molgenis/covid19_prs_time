@@ -96,6 +96,40 @@ vragenLong$vl3 <- factor(vragenLong$vl, levels = vls, ordered = F)
 summarized <- vragenLong %>% select(PROJECT_PSEUDO_ID, vl2, responsdatum.covid.vragenlijst) %>% filter(!is.na(responsdatum.covid.vragenlijst)) %>% group_by(vl2) %>%
   summarise(nSamples = length(unique(PROJECT_PSEUDO_ID)))
 
+# Table 1, g1
+
+summaryPerSample <- vragenLong %>% group_by(PROJECT_PSEUDO_ID) %>% summarise(
+  nQuestionnaires = n_distinct(responsdatum.covid.vragenlijst),
+  BMI = ifelse(length(na.omit(BMI)) <= 0, NA_real_, head(na.omit(BMI),1)),
+  gender = head(na.omit(gender_recent),1),
+  age = head(na.omit(age_recent),1),
+  chronic = head(na.omit(chronic_recent),1),
+  household = head(na.omit(household_recent),1),
+  children = head(na.omit(have_childs_at_home_recent),1)
+)
+
+print(summaryPerSample %>%
+        ungroup() %>%
+        summarise(
+          nSamples = n(),
+          averageQuestionnaireCount = mean(nQuestionnaires),
+          BMI_mean = mean(BMI, na.rm=T),
+          BMI_sd = sd(BMI, na.rm=T),
+          age_min = min(age),
+          age_mean = mean(age),
+          age_sd = sd(age),
+          age_max = max(age),
+          male_N =sum(gender == 1),
+          male_percentage = sum(gender == 1) / n() * 100,
+          female_N = sum(gender == 0),
+          female_percentage = sum(gender == 0) / n() * 100,
+          chronic_N = sum(chronic == 1),
+          chronic_percentage = sum(chronic == 1) / n() * 100,
+          household_percentage = sum(household == 1) / n() * 100,
+          household_N = sum(household == 1),
+          children_percentage = sum(children == 1) / n() * 100,
+          children_N = sum(children == 1),
+        ), width = Inf)
 ## Longitudinal samples
 
 # read pheno
@@ -181,3 +215,38 @@ vragenLong$vl3 <- factor(vragenLong$vl, levels = vls, ordered = F)
 
 summarized <- vragenLong %>% select(PROJECT_PSEUDO_ID, vl2, responsdatum.covid.vragenlijst) %>% filter(!is.na(responsdatum.covid.vragenlijst)) %>% group_by(vl2) %>%
   summarise(nSamples = length(unique(PROJECT_PSEUDO_ID)))
+
+# Table 1, g2
+
+summaryPerSample <- vragenLong %>% group_by(PROJECT_PSEUDO_ID) %>% summarise(
+  nQuestionnaires = n_distinct(responsdatum.covid.vragenlijst),
+  BMI = ifelse(length(na.omit(BMI)) <= 0, NA_real_, head(na.omit(BMI),1)),
+  gender = head(na.omit(gender_recent),1),
+  age = head(na.omit(age_recent),1),
+  chronic = head(na.omit(chronic_recent),1),
+  household = head(na.omit(household_recent),1),
+  children = head(na.omit(have_childs_at_home_recent),1)
+)
+
+print(summaryPerSample %>%
+  ungroup() %>%
+  summarise(
+    nSamples = n(),
+    averageQuestionnaireCount = mean(nQuestionnaires),
+    BMI_mean = mean(BMI, na.rm=T),
+    BMI_sd = sd(BMI, na.rm=T),
+    age_min = min(age),
+    age_mean = mean(age),
+    age_sd = sd(age),
+    age_max = max(age),
+    male_N =sum(gender == 1),
+    male_percentage = sum(gender == 1) / n() * 100,
+    female_N = sum(gender == 0),
+    female_percentage = sum(gender == 0) / n() * 100,
+    chronic_N = sum(chronic == 1),
+    chronic_percentage = sum(chronic == 1) / n() * 100,
+    household_percentage = sum(household == 1) / n() * 100,
+    household_N = sum(household == 1),
+    children_percentage = sum(children == 1) / n() * 100,
+    children_N = sum(children == 1),
+  ), width = Inf)
