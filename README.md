@@ -49,6 +49,6 @@ we attempted to fit a time interaction.
 
 ## Manuscript figures
 
-Fig2: `./scripts/plotHeatmapBaselineModels.R`
-Fig3: `./scripts/`
-Fig4: `./scripts/`
+* Fig2: `./scripts/plotHeatmapBaselineModels.R`
+* Fig3: `./scripts/qolPlot.R`
+* Fig4: `./scripts/c19Plot.R`
