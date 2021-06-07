@@ -37,7 +37,7 @@ inverseVarianceMeta <- function(resultsPerArray, seCol, valueCol){
   return(metaRes)
 }
 
-
+qPrs <- qVsPrsRecodeValidation[1,]
 fitModel <- function(qPrs, selectedQ, arrayList){
   
   print(str(qPrs))
@@ -133,7 +133,7 @@ fitModel <- function(qPrs, selectedQ, arrayList){
             stop("no model")
           }
           
-          return(coef)
+          qreturn(coef)
         })
       },
       error=function(cond){
@@ -243,6 +243,12 @@ qVsPrsRecodeValidation <- qVsPrsRecodeValidation[!sapply(qVsPrsRecodeValidation,
 qVsPrsRecodeValidation <- do.call(rbind, qVsPrsRecodeValidation)
 colnames(qVsPrsRecodeValidation) <- c("question", "question2", "prsTrait")
 
+saveRDS(qVsPrsRecodeValidation, file = "qVsPrsRecodeValidation.rds")
+qVsPrsRecodeValidation <- readRDS("qVsPrsRecodeValidation.rds")
+
+vragenLongFull <- vragenLong
+
+
 #Overwrite vragen long with validation data containing only validation samples and rounds
 vragenLong <- vragenLongValidation
 intermediatesdir <- paste0(intermediatesdir,"validation")
@@ -291,6 +297,5 @@ summaryValidation <- do.call(rbind, summaryValidation)
 
 
 write.table(summaryValidation, file = "interactionSummaryValidation.txt", sep = "\t", quote = F, row.names = F)
-
 
 

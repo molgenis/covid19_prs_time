@@ -30,7 +30,7 @@ qVsPrsBaselineZscores <- read.delim(qVsPrsBaselineZscoresFile, row.names = 1)
 str(qVsPrsBaselineZscores)
 
 qVsPrsBaselineZscores[is.na(qVsPrsBaselineZscores)] <- 0
-
+  
 prs3 <- prs2[,colnames(qVsPrsBaselineZscores) ]
 
 #300 is questions tested; 17 is PRS tested
