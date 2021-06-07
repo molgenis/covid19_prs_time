@@ -1,4 +1,4 @@
-# covid19_prs_time (later we can put the title here)
+# Increased genetic contribution to wellbeing during the COVID-19 pandemic 
 
 ## Quality control
 
