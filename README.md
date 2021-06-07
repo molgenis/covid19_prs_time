@@ -46,3 +46,9 @@ is used for creating figures and performing significance tests.
 After preprocesssing of the PGSs and traits, `./scripts/plotOutcomeDistributions.R`
 can be used to plot the distributions of each of the outcome variables for which
 we attempted to fit a time interaction.
+
+## Manuscript figures
+
+Fig2: `./scripts/plotHeatmapBaselineModels.R`
+Fig3: `./scripts/`
+Fig4: `./scripts/`
