@@ -13,10 +13,13 @@ The scripts are described [here](scripts/pgs-calculations).
 
 ### Longitudinal models
 
-We selected ## questions for longitudinal models. The data was converted to long format and other preprocessing needed for the mixed models.
-After fitting the models the plots are made using this script: `/scripts/`
+The data was converted to long format and other preprocessing needed for the mixed models are done here: `/scripts/prepareForLongitudinalModels.R`
 
-### Validation models
+The longitudinal models are fitted by: `/scripts/longitudinalModels.R` 
+
+The plots of the longitudinal models are made using: `/scripts/plotLongitudinalModels.R`
+
+### Sensitivity analysis
 
 ## Correlation with nation-wide statistics
 
