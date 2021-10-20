@@ -1,22 +1,30 @@
-# covid19_prs_time (later we can put the title here)
+# Increased genetic contribution to wellbeing during the COVID-19 pandemic 
 
 ## Quality control
 
-script: 
+Sample quality control is done in: `./scripts/sampleQc.R`
 
 ## PGS calculation
 
 Polygenic scores (PGSs) are calculated using the scripts in `./scripts/pgs-calculations`.
 The scripts are described [here](scripts/pgs-calculations).
 
+## Combine and filter questionnaire data and recode answer options
+The scripts used for combining and questionnaire data and recode the answer options can be found in `./scripts/combine-filter-and-recode-questionnaire-data`. 
+Description is available [here](scripts/combine-filter-and-recode-questionnaire-data`)
+
 ## Relation PGSs and traits
 
 ### Longitudinal models
 
-We selected ## questions for longitudinal models. The data was converted to long format and other preprocessing needed for the mixed models.
-After fitting the models the plots are made using this script: ####
+The data was converted to long format and other preprocessing needed for the mixed models are done here: `/scripts/prepareForLongitudinalModels.R`
 
-### Validation models
+The longitudinal models are fitted by: `/scripts/longitudinalModels.R` 
+
+The plots of the longitudinal models are made using: `/scripts/plotLongitudinalModels.R`
+
+### Baseline associations and sensitivity analysis
+The scripts used for the baseline associations are avaiable in the `./scripts/baseline-and-validation-models/` directory. Description can be found [here](scripts/baseline-and-validation-models)
 
 ## Correlation with nation-wide statistics
 
@@ -43,3 +51,9 @@ is used for creating figures and performing significance tests.
 After preprocesssing of the PGSs and traits, `./scripts/plotOutcomeDistributions.R`
 can be used to plot the distributions of each of the outcome variables for which
 we attempted to fit a time interaction.
+
+## Manuscript figures
+
+* Fig2: `./scripts/plotHeatmapBaselineModels.R`
+* Fig3: `./scripts/qolPlot.R`
+* Fig4: `./scripts/c19Plot.R`
