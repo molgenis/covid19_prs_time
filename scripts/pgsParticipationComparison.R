@@ -141,7 +141,7 @@ tTestsLongitudinalVsBaselineGsa <- bind_rows(mapply(function(thisTrait, pgsTibbl
   print(tTestRespondentVsBaseline$method)
   return(data.frame(pValueRespondentVsInvited = tTestRespondentVsBaseline[["p.value"]],
                     meanIncluded = tTestRespondentVsBaseline[["estimate"]][["mean in group Longitudinal"]],
-                    meanInvitedNotIncluded = tTestRespondentVsBaseline[["estimate"]][["mean in group Invited"]]))
+                    meanInvitedNotIncluded = tTestRespondentVsBaseline[["estimate"]][["mean in group Baseline"]]))
 }, selectedTraits, list(pgsTibble = pgsFull %>% filter(ARRAY == "GSA")), SIMPLIFY = F, USE.NAMES = T), .id = "trait")
 
 tTestsLongitudinalVsBaselineCyto <- bind_rows(mapply(function(thisTrait, pgsTibble) {
@@ -151,7 +151,7 @@ tTestsLongitudinalVsBaselineCyto <- bind_rows(mapply(function(thisTrait, pgsTibb
   print(tTestRespondentVsBaseline$method)
   return(data.frame(pValueRespondentVsInvited = tTestRespondentVsBaseline[["p.value"]],
                     meanIncluded = tTestRespondentVsBaseline[["estimate"]][["mean in group Longitudinal"]],
-                    meanInvitedNotIncluded = tTestRespondentVsBaseline[["estimate"]][["mean in group Invited"]]))
+                    meanInvitedNotIncluded = tTestRespondentVsBaseline[["estimate"]][["mean in group Baseline"]]))
 }, selectedTraits, list(pgsTibble = pgsFull %>% filter(ARRAY == "HumanCytoSNP")), SIMPLIFY = F, USE.NAMES = T), .id = "trait")
 
 
