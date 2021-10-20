@@ -87,7 +87,7 @@ pgsFull <- bind_rows(list("GSA" = prsGsa, "HumanCytoSNP" = prsCyto), .id = "ARRA
     isLongitudinalRespondentVsInvited = factor(case_when(
       isInvited == 1 & isLongitudinalRespondent == 1 ~ "Longitudinal", 
       isInvited == 1 ~ "Invited")),
-    isLongitudinalRespondentVsBaseline = factor(case_when(
+    isLongitudinalRespondentVsOnlyBaseline = factor(case_when(
       isInvited == 1 & isLongitudinalRespondent == 1 ~ "Longitudinal",
       isInvited == 1 & isBaselineRespondent == 1 ~ "Baseline"
     ))) %>%
@@ -136,8 +136,8 @@ tTestsLongitudinalVsInvitedCyto <- bind_rows(mapply(function(thisTrait, pgsTibbl
 
 tTestsLongitudinalVsBaselineGsa <- bind_rows(mapply(function(thisTrait, pgsTibble) {
   message(thisTrait)
-  thisTraitData = pgsTibble %>% filter(trait == thisTrait) %>% filter(!is.na(isLongitudinalRespondentVsBaseline))
-  tTestRespondentVsBaseline <- t.test(thisTraitData$PGS ~ thisTraitData$isLongitudinalRespondentVsBaseline)
+  thisTraitData = pgsTibble %>% filter(trait == thisTrait) %>% filter(!is.na(isLongitudinalRespondentVsOnlyBaseline))
+  tTestRespondentVsBaseline <- t.test(thisTraitData$PGS ~ thisTraitData$isLongitudinalRespondentVsOnlyBaseline)
   print(tTestRespondentVsBaseline$method)
   return(data.frame(pValueRespondentVsInvited = tTestRespondentVsBaseline[["p.value"]],
                     meanIncluded = tTestRespondentVsBaseline[["estimate"]][["mean in group Longitudinal"]],
@@ -146,8 +146,8 @@ tTestsLongitudinalVsBaselineGsa <- bind_rows(mapply(function(thisTrait, pgsTibbl
 
 tTestsLongitudinalVsBaselineCyto <- bind_rows(mapply(function(thisTrait, pgsTibble) {
   message(thisTrait)
-  thisTraitData = pgsTibble %>% filter(trait == thisTrait) %>% filter(!is.na(isLongitudinalRespondentVsBaseline))
-  tTestRespondentVsBaseline <- t.test(thisTraitData$PGS ~ thisTraitData$isLongitudinalRespondentVsBaseline)
+  thisTraitData = pgsTibble %>% filter(trait == thisTrait) %>% filter(!is.na(isLongitudinalRespondentVsOnlyBaseline))
+  tTestRespondentVsBaseline <- t.test(thisTraitData$PGS ~ thisTraitData$isLongitudinalRespondentVsOnlyBaseline)
   print(tTestRespondentVsBaseline$method)
   return(data.frame(pValueRespondentVsInvited = tTestRespondentVsBaseline[["p.value"]],
                     meanIncluded = tTestRespondentVsBaseline[["estimate"]][["mean in group Longitudinal"]],
