@@ -35,4 +35,6 @@ and the sample size for that GWAS in the second column (comma-separated).
 - `LOGS`: Log file directory
 - `LD_REFERENCE_PANEL`: LD reference panel to be used with PRScs.
 
+Don't forget to download a copy of PRS-CS (https://github.com/getian107/PRScs) and to change the path of PRS-CS to the newly downloaded copy
+
 Thereafter, first run `calculatePolygenicScores.sh`. Then run `sumChromosomeScores.sh`.
