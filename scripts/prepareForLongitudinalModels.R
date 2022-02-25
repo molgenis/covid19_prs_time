@@ -276,7 +276,9 @@ for (qIndex in (1:nrow(selectedQ))) {
     if (sum(table(recoded)) != sum(table(ordinalAnswers))) {
       stop("Sum of answer frequencies not equal")
     }
+    print("applying recoding!!!!!!!")
     vragenLong[,q] <- recoded
+    print(table(vragenLong[,q]))
   }
 }
 
