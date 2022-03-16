@@ -86,7 +86,11 @@ pgsFull <- bind_rows(list("GSA" = prsGsa, "HumanCytoSNP" = prsCyto), .id = "ARRA
       isInvited == 1 ~ "Invited")),
     isLongitudinalRespondentVsInvited = factor(case_when(
       isInvited == 1 & isLongitudinalRespondent == 1 ~ "Longitudinal", 
-      isInvited == 1 ~ "Invited"))) %>%
+      isInvited == 1 ~ "Invited")),
+    isLongitudinalRespondentVsOnlyBaseline = factor(case_when(
+      isInvited == 1 & isLongitudinalRespondent == 1 ~ "Longitudinal",
+      isInvited == 1 & isBaselineRespondent == 1 ~ "BaselineOnly"
+    ))) %>%
     filter(!is.na(isBaselineRespondentVsInvited))
 
 tTestsBaselineVsInvitedGsa <- bind_rows(mapply(function(thisTrait, pgsTibble) {
@@ -130,6 +134,26 @@ tTestsLongitudinalVsInvitedCyto <- bind_rows(mapply(function(thisTrait, pgsTibbl
                     meanInvitedNotIncluded = tTestRespondentVsInvited[["estimate"]][["mean in group Invited"]]))
 }, selectedTraits, list(pgsTibble = pgsFull %>% filter(ARRAY == "HumanCytoSNP")), SIMPLIFY = F, USE.NAMES = T), .id = "trait")
 
+tTestsLongitudinalVsBaselineGsa <- bind_rows(mapply(function(thisTrait, pgsTibble) {
+  message(thisTrait)
+  thisTraitData = pgsTibble %>% filter(trait == thisTrait) %>% filter(!is.na(isLongitudinalRespondentVsOnlyBaseline))
+  tTestRespondentVsBaseline <- t.test(thisTraitData$PGS ~ thisTraitData$isLongitudinalRespondentVsOnlyBaseline)
+  print(tTestRespondentVsBaseline$method)
+  return(data.frame(pValueRespondentVsInvited = tTestRespondentVsBaseline[["p.value"]],
+                    meanIncluded = tTestRespondentVsBaseline[["estimate"]][["mean in group Longitudinal"]],
+                    meanInvitedNotIncluded = tTestRespondentVsBaseline[["estimate"]][["mean in group BaselineOnly"]]))
+}, selectedTraits, list(pgsTibble = pgsFull %>% filter(ARRAY == "GSA")), SIMPLIFY = F, USE.NAMES = T), .id = "trait")
+
+tTestsLongitudinalVsBaselineCyto <- bind_rows(mapply(function(thisTrait, pgsTibble) {
+  message(thisTrait)
+  thisTraitData = pgsTibble %>% filter(trait == thisTrait) %>% filter(!is.na(isLongitudinalRespondentVsOnlyBaseline))
+  tTestRespondentVsBaseline <- t.test(thisTraitData$PGS ~ thisTraitData$isLongitudinalRespondentVsOnlyBaseline)
+  print(tTestRespondentVsBaseline$method)
+  return(data.frame(pValueRespondentVsInvited = tTestRespondentVsBaseline[["p.value"]],
+                    meanIncluded = tTestRespondentVsBaseline[["estimate"]][["mean in group Longitudinal"]],
+                    meanInvitedNotIncluded = tTestRespondentVsBaseline[["estimate"]][["mean in group BaselineOnly"]]))
+}, selectedTraits, list(pgsTibble = pgsFull %>% filter(ARRAY == "HumanCytoSNP")), SIMPLIFY = F, USE.NAMES = T), .id = "trait")
+
 
 tTestResultsBaseline <- bind_rows(list("GSA" = tTestsBaselineVsInvitedGsa, 
                                "HumanCytoSNP" = tTestsBaselineVsInvitedCyto),
@@ -148,6 +172,16 @@ tTestResultsLongitudinal <- bind_rows(list("GSA" = tTestsLongitudinalVsInvitedGs
 write.table(tTestResultsLongitudinal, 
             file.path(out, paste0("pgsCoronaSamplesTtestResultsLongitudinal_", format(Sys.Date(), "%Y%m%d"), ".txt")),
             row.names = F, col.names = T, quote = F, sep = "\t")
+
+tTestResultsLongitudinalVsBaseline <- bind_rows(list("GSA" = tTestsLongitudinalVsBaselineGsa, 
+                                           "HumanCytoSNP" = tTestsLongitudinalVsBaselineCyto),
+                                      .id = "array")
+
+# Write summaries for PGSs
+write.table(tTestResultsLongitudinalVsBaseline, 
+            file.path(out, paste0("pgsCoronaSamplesTtestResultsLongitudinalVsBaseline_", format(Sys.Date(), "%Y%m%d"), ".txt")),
+            row.names = F, col.names = T, quote = F, sep = "\t")
+
 
 pgsFull <- pgsFull %>% inner_join(traitTable, by = "trait")
 
@@ -226,6 +260,40 @@ ggplot(pgsFull %>% filter(!is.na(isLongitudinalRespondentVsInvited) & ARRAY == "
   xlab("Included longitudinal samples compared to samples that \nhave been invited but were not included in the longitudinal analysis") +
   ylab("Polygenic scores") +
   labs(title = "D: Longitudinal samples vs not included samples (HumanCytoSNP)") +
+  facet_wrap(~traitLabel, ncol = 4, scales = "free_y",
+             labeller = global_labeller) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+ggplot(pgsFull %>% filter(!is.na(isLongitudinalRespondentVsOnlyBaseline) & ARRAY == "GSA" & trait %in% selectedTraits), 
+       aes(x = isLongitudinalRespondentVsOnlyBaseline, y = PGS)) +
+  geom_violin(trim=T, size = 1 / (ggplot2::.pt * 72.27/96), fill = "gray", colour = "grey20") +
+  geom_boxplot(width=0.1, size = 1 / (ggplot2::.pt * 72.27/96), outlier.shape = NA, colour = "grey10") +
+  stat_compare_means(method = "t.test",
+                     comparisons = list(c("Longitudinal", "BaselineOnly")),
+                     bracket.nudge.y = 1, vjust = -0.5) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.2))) +
+  scale_x_discrete(breaks = c("Longitudinal", "BaselineOnly"),
+                   labels = c("Longitudinal samples", "Samples only included \nin baseline analyses")) +
+  xlab("Included longitudinal samples compared to samples that \nhave only been inlcuded in baseline analyses") +
+  ylab("Polygenic scores") +
+  labs(title = "E: Longitudinal samples vs baseline samples (GSA)") +
+  facet_wrap(~traitLabel, ncol = 4, scales = "free_y",
+             labeller = global_labeller) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+ggplot(pgsFull %>% filter(!is.na(isLongitudinalRespondentVsOnlyBaseline) & ARRAY == "HumanCytoSNP" & trait %in% selectedTraits), 
+       aes(x = isLongitudinalRespondentVsOnlyBaseline, y = PGS)) +
+  geom_violin(trim=T, size = 1 / (ggplot2::.pt * 72.27/96), fill = "gray", colour = "grey20") +
+  geom_boxplot(width=0.1, size = 1 / (ggplot2::.pt * 72.27/96), outlier.shape = NA, colour = "grey10") +
+  stat_compare_means(method = "t.test",
+                     comparisons = list(c("Longitudinal", "BaselineOnly")),
+                     bracket.nudge.y = 1, vjust = -0.5) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.2))) +
+  scale_x_discrete(breaks = c("Longitudinal", "BaselineOnly"),
+                   labels = c("Longitudinal samples", "Samples only included \nin baseline analyses")) +
+  xlab("Included longitudinal samples compared to samples that \nhave only been included in baseline analyses") +
+  ylab("Polygenic scores") +
+  labs(title = "F: Longitudinal samples vs baseline samples (HumanCytoSNP)") +
   facet_wrap(~traitLabel, ncol = 4, scales = "free_y",
              labeller = global_labeller) +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))

@@ -1,0 +1,98 @@
+Question	Type	Type Longitudinal	Mixed	Number of timepoints	Question answers	Recode value labels
+Mini combined, depressief score	gaussian	gaussian	TRUE	9		NA
+Positive tested cumsum	binomial	binomial	FALSE	19		NA
+BMI	gaussian	gaussian	TRUE	16		NA
+heeft iemand die dichtbij u staat een coronavirus-infectie?	binomial	binomial	TRUE	18		NA
+ik voelde me moe / in welke mate had u de afgelopen 7 dagen last van:	gaussian	gaussian	TRUE	18		NA
+ik was gauw moe / in welke mate had u de afgelopen 7 dagen last van:	gaussian	gaussian	TRUE	18		NA
+ik voelde me fit / in welke mate had u de afgelopen 7 dagen last van:	gaussian	gaussian	TRUE	18		NA
+lichamelijk voelde ik me uitgeput / in welke mate had u de afgelopen 7 dagen last van:	gaussian	gaussian	TRUE	18		NA
+ik heb vertrouwen in de aanpak van de corona-crisis door de nederlandse regering	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+hebt u zich tijdens de afgelopen 7 dagen voortdurend somber of depressief gevoeld gedurende het grootste gedeelte van de dag, en dit bijna elke dag?	binomial	binomial	TRUE	18		NA
+hebt u tijdens de afgelopen 7 dagen voortdurend het gevoel gehad nergens meer zin in te hebben of geen interesse meer te hebben voor dingen die u normaal wel interesseren?	binomial	binomial	TRUE	18		NA
+was uw eetlust merkbaar veranderd, of is uw gewicht toegenomen of afgenomen, zonder dat dit de bedoeling was? (in de afgelopen 7 dagen)	binomial	binomial	TRUE	18		NA
+hebt u bijna elke nacht slaapproblemen gehad (moeilijk inslapen, wakker worden tijdens de nacht of te vroeg in de ochtend, of juist teveel slapen)? (in de afgelopen 7 dagen)	binomial	binomial	TRUE	18		NA
+praatte of bewoog u trager dan gewoonlijk, of voelde u zich juist rusteloos, gejaagd en kon u moeilijk stil blijven zitten? bijna elke dag? (in de afgelopen 7 dagen)	binomial	binomial	TRUE	18		NA
+voelde u zich bijna elke dag waardeloos of schuldig? (in de afgelopen 7 dagen)	binomial	binomial	TRUE	18		NA
+kon u zich bijna elke dag moeilijk concentreren of moeilijk beslissingen nemen? (in de afgelopen 7 dagen)	binomial	binomial	TRUE	18		NA
+hebt u in de afgelopen 7 dagen buitensporig gepiekerd en zich zorgen gemaakt over meerdere problemen van het dagelijks leven, op het werk, thuis, in uw naaste omgeving?	binomial	binomial	TRUE	18		NA
+u zich rusteloos, geladen of zenuwachtig voelde? / gebeurde het in de afgelopen 7 dagen vaak dat	binomial	binomial	TRUE	18		NA
+u zich gespannen voelde? / gebeurde het in de afgelopen 7 dagen vaak dat	binomial	binomial	TRUE	18		NA
+u bijzonder prikkelbaar was? / gebeurde het in de afgelopen 7 dagen vaak dat	binomial	binomial	TRUE	18		NA
+hoe waardeert u uw kwaliteit van leven over de afgelopen 14 dagen?	gaussian	gaussian	TRUE	13		NA
+hoofdpijn / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+duizeligheid / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+pijn in de borst of hartstreek / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+pijn onder in de rug / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+misselijkheid of een maag die van streek is / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+pijnlijke spieren / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+moeilijk adem kunnen krijgen / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+je soms erg warm, dan weer erg koud voelen / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+een brok in je keel / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+je lichamelijk ergens slap voelen / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+zwaar voelen in armen of benen / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+kortademigheid / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+pijn bij het ademen / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+keelpijn / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+hoesten zonder slijm / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+rode, pijnlijke of jeukende ogen / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+ik maak me zorgen om zelf ziek te worden / hoeveel zorgen maakte u zich de afgelopen 7 dagen over de corona-crisis?	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+ik maak me zorgen dat iemand die dichtbij mij staat ziek wordt / hoeveel zorgen maakte u zich de afgelopen 7 dagen over de corona-crisis?	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+ik maak me zorgen dat ik of mijn familie financieel ernstig in de problemen kom(t) / hoeveel zorgen maakte u zich de afgelopen 7 dagen over de corona-crisis?	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+ik maak me zorgen dat ik mijn baan verlies / hoeveel zorgen maakte u zich de afgelopen 7 dagen over de corona-crisis?	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+ik maak me zorgen dat het lang gaat duren voordat ik mijn normale dagelijkse leven weer kan oppakken / hoeveel zorgen maakte u zich de afgelopen 7 dagen over de corona-crisis?	ordinal-ordered	binomial	TRUE	18		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+hoeveel zorgen maakte u zich de afgelopen 7 dagen over de corona-crisis?	gaussian	gaussian	TRUE	18		NA
+niezen / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	17		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+in de afgelopen 7 dagen, hoeveel minuten hebt u in het totaal (matig) intensief bewogen (bijvoorbeeld wandelen, fietsen, hardlopen)?	ordinal-ordered	binomial	TRUE	16		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+op hoeveel momenten van de dag eet u iets?	ordinal-ordered	binomial	TRUE	16		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1", "6": "1", "7": "1", "8": "1"}
+hoe vaak voelt u zich buitengesloten? (in de afgelopen 7 dagen)	ordinal-ordered	binomial	TRUE	16		{"1": "0", "2": "1", "3": "1"}
+hoe vaak voelt u zich afgesloten van anderen? (in de afgelopen 7 dagen)	ordinal-ordered	binomial	TRUE	16		{"1": "0", "2": "1", "3": "1"}
+hoe vaak voelt u zich alleen? (in de afgelopen 7 dagen)	ordinal-ordered	binomial	TRUE	16		{"1": "0", "2": "1", "3": "1"}
+diarree / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	16		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+buikpijn / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	16		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+werkt tenminste √©√©n van uw huisgenoten nog buitenshuis?	binomial	binomial	TRUE	14		NA
+gevoelige huid / in welke mate had u de afgelopen 14 dagen last van:	ordinal-ordered	binomial	TRUE	12		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+hebt u de afgelopen 7 dagen gerookt?	binomial	binomial	TRUE	11		NA
+pijn in de nek, schouder(s) of arm(en) / in welke mate had u de afgelopen 14 dagen last van:	ordinal-ordered	binomial	TRUE	11		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+pijn boven in de rug / in welke mate had u de afgelopen 14 dagen last van:	ordinal-ordered	binomial	TRUE	11		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+hebt u de afgelopen 7 dagen medicatie gebruikt?	binomial	binomial	TRUE	10		NA
+het coronavirus bedreigt iedereen in nederland	ordinal-ordered	binomial	TRUE	10		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+sinds de uitbraak van de corona-crisis zie ik anderen in mijn omgeving, zoals mensen in de buurt of in winkels, als een bedreiging voor mijn welzijn	ordinal-ordered	binomial	TRUE	10		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+voelde u zich bijna elke dag moe of futloos? (in de afgelopen 14 dagen)	binomial	binomial	TRUE	9		NA
+ik voel me verbonden met alle nederlanders (in de afgelopen 7 dagen)	ordinal-ordered	binomial	TRUE	7		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+aandachtig / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	ordinal-ordered	binomial	TRUE	7		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+vijandig / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	ordinal-ordered	binomial	TRUE	7		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+beschaamd / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	ordinal-ordered	binomial	TRUE	7		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+nerveus / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	ordinal-ordered	binomial	TRUE	7		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+ge√Ønspireerd / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	ordinal-ordered	binomial	TRUE	7		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+bedroefd / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	ordinal-ordered	binomial	TRUE	7		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+vastbesloten / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	ordinal-ordered	binomial	TRUE	7		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+bang / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	ordinal-ordered	binomial	TRUE	7		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+actief / in welke mate heeft u zich de afgelopen 14 dagen zo gevoeld?	ordinal-ordered	binomial	TRUE	7		{"1": "0", "2": "0", "3": "1", "4": "1", "5": "1"}
+ik doe alles wat ik kan om anderen te helpen die besmet zijn met het coronavirus (in de afgelopen 7 dagen)	ordinal-ordered	binomial	TRUE	7		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+ik verwacht dat anderen alles zullen doen om mij te helpen als ik met het coronavirus besmet ben of raak (in de afgelopen 7 dagen)	ordinal-ordered	binomial	TRUE	7		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+in de afgelopen 7 dagen, hoeveel tijd bracht u gemiddeld per werkdag (ma t/m vr) zittend door?	ordinal-ordered	binomial	TRUE	6		NA
+in de afgelopen 7 dagen, hoeveel tijd bracht u gemiddeld per weekenddag (za, zo) zittend door?	ordinal-ordered	binomial	TRUE	6		NA
+welk rapportcijfer geeft u zichzelf voor hoe fit u zich voelt (van 1 tot 10)	gaussian	gaussian	TRUE	4		NA
+ik voel me niet verplicht om de corona maatregelen van de overheid aan te houden (in de afgelopen 7 dagen)	ordinal-ordered	binomial	TRUE	4		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+ik voel me buitengesloten door de maatschappij (in de afgelopen 7 dagen)	ordinal-ordered	binomial	TRUE	4		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+ik heb het gevoel dat ik niet gewaardeerd word door anderen in de maatschappij (in de afgelopen 7 dagen)	ordinal-ordered	binomial	TRUE	4		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+ik ben gefrustreerd over hoe het nu gaat in de samenleving (in de afgelopen 7 dagen)	gaussian	gaussian	TRUE	4		NA
+ik ben bang dat het fout zal gaan in de samenleving (in de afgelopen 7 dagen)	gaussian	gaussian	TRUE	4		NA
+ik heb de neiging om snel terug te veren na moeilijke tijden	ordinal-ordered-turned	binomial	TRUE	3		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+ik bedenk me dat het vergeleken met andere dingen allemaal best meevalt / wat denkt u over het algemeen wanneer u iets vervelends of iets ergs heeft meegemaakt?	ordinal-ordered-turned	binomial	TRUE	3		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+ik bedenk me dat ik het moet accepteren / wat denkt u over het algemeen wanneer u iets vervelends of iets ergs heeft meegemaakt?	ordinal-ordered-turned	binomial	TRUE	3		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+ik denk er telkens aan hoe vreselijk de situatie is geweest / wat denkt u over het algemeen wanneer u iets vervelends of iets ergs heeft meegemaakt?	ordinal-ordered-turned	binomial	TRUE	3		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+voorafgaand aan de corona-crisis, hoeveel minuten bewoog u per week (matig) intensief (bijvoorbeeld wandelen, fietsen, hardlopen)?	ordinal-ordered	binomial	TRUE	2		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+ik vermijd horeca gelegenheden (bars, restaurants) / ik neem deze extra maatregelen voor mezelf:	binomial	binomial	TRUE	2		NA
+ik vermijd parken en/of stranden / ik neem deze extra maatregelen voor mezelf:	binomial	binomial	TRUE	2		NA
+hebt u een chronische aandoening?	binomial	binomial	TRUE	2		NA
+geen handen schuddden / ik houd me aan de volgende maatregelen:	binomial	binomial	TRUE	2		NA
+mensen in een risicogroep niet bezoeken (van 70 jaar of ouder en/of met kwetsbare gezondheid) / ik houd me aan de volgende maatregelen:	binomial	binomial	TRUE	2		NA
+ik hou graag zelf de controle over een situatie	ordinal-ordered-turned	binomial	TRUE	2		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+ik ben gefrustreerd dat mensen de corona regels niet naleven	ordinal-ordered-turned	binomial	TRUE	2		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+wat vindt u, over het algemeen genomen, van uw gezondheid?	ordinal-ordered-turned	binomial	TRUE	2		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+diarree of buikpijn / in welke mate had u de afgelopen 7 dagen last van:	ordinal-ordered	binomial	TRUE	2		{"1": "0", "2": "0", "3": "0", "4": "1", "5": "1"}
+hoe vaak wast u uw handen 20 seconden of langer?	ordinal-ordered	binomial	TRUE	2		{"1": "0", "2": "0", "3": "1", "4": "1"}
+hoe vaak per dag wast u uw handen?	ordinal-ordered	binomial	TRUE	2		{"1": "0", "2": "0", "3": "1", "4": "1"}
+

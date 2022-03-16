@@ -4,14 +4,6 @@
 Scripts that are used to calculate polygenic scores.
 
 ## Files
-
-`sumChromosomeScores.sh`:
-  Shell script for merging PGSs over chromomsomes
-
-
-`sumChromosomeScores.R`: 
-  Corresponding R script that performs the actual merging of PGSs over chromosomes
-  
   
 `calculatePolygenicScores.sh`:
   Overarching script that submits `calculatePolygenicScoresForChromosome.sh` for every GWAS, chromosome
@@ -19,6 +11,14 @@ Scripts that are used to calculate polygenic scores.
   
 `calculatePolygenicScoresForChromosome.sh`:
   Script that calculates PGSs for a particular GWAS and chromosome
+  
+  
+`sumChromosomeScores.sh`:
+  Shell script for merging PGSs over chromomsomes
+
+
+`sumChromosomeScores.R`: 
+  Corresponding R script that performs the actual merging of PGSs over chromosomes
 
 ## Usage
 
@@ -34,3 +34,7 @@ The entire prefix of the bpgen files are formatted as follows `${BFILE_PATH}/${C
 and the sample size for that GWAS in the second column (comma-separated).
 - `LOGS`: Log file directory
 - `LD_REFERENCE_PANEL`: LD reference panel to be used with PRScs.
+
+Don't forget to download a copy of PRS-CS (https://github.com/getian107/PRScs) and to change the path of PRS-CS to the newly downloaded copy
+
+Thereafter, first run `calculatePolygenicScores.sh`. Then run `sumChromosomeScores.sh`.
